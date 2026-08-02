@@ -8,16 +8,17 @@
 
 | 구분 | 상태 |
 |---|---|
-| 저장소 구조·가이드 | 준비 완료 |
+| 저장소 구조·플랫폼별 가이드 | 준비 완료 |
 | Windows 11 Pro + WSL2 절차 | 준비 완료 |
 | macOS + OrbStack 절차 | 준비 완료 |
 | Dockerfile·웹 소스 | 준비 완료 |
-| 자동 구조·Docker smoke test | 준비 완료 |
+| 단계별 증거 수집·자동 마스킹 | 준비 완료 |
+| 저장소·Shell·PowerShell·Docker CI 검증 | 준비 완료 |
 | 실제 개인 장비 로그·스크린샷 | 미완료 |
 | 실제 트러블슈팅 2건 | 미완료 |
 | clean clone 최종 결과 기록 | 미완료 |
 
-저장소에 있는 문서, 스크립트, 자동화와 `.gitkeep`은 수행을 돕는 구조입니다. **실제 명령을 실행하지 않은 결과를 완료로 표시하지 않습니다.**
+저장소에 있는 문서, 스크립트, 자동화와 `.gitkeep`은 수행을 돕는 구조입니다. **실제로 실행하지 않은 결과를 완료로 표시하지 않습니다.**
 
 ---
 
@@ -27,12 +28,11 @@
 2. [문서와 저장소 구조](#2-문서와-저장소-구조)
 3. [Windows 11 Pro + WSL2 시작](#3-windows-11-pro--wsl2-시작)
 4. [macOS + OrbStack 시작](#4-macos--orbstack-시작)
-5. [VS Code 검증과 로그 수집](#5-vs-code-검증과-로그-수집)
+5. [VS Code 검증과 증거 수집](#5-vs-code-검증과-증거-수집)
 6. [공통 미션 수행](#6-공통-미션-수행)
-7. [증거와 결과 문서](#7-증거와-결과-문서)
-8. [Git·GitHub 제출](#8-gitgithub-제출)
-9. [Clean clone 최종 검증](#9-clean-clone-최종-검증)
-10. [평가 전 체크리스트](#10-평가-전-체크리스트)
+7. [Git·GitHub 제출](#7-gitgithub-제출)
+8. [Clean clone 최종 검증](#8-clean-clone-최종-검증)
+9. [평가 전 체크리스트](#9-평가-전-체크리스트)
 
 ---
 
@@ -52,7 +52,7 @@ Windows에서 수행 → macOS·OrbStack 항목: 해당 없음
 macOS에서 수행   → Windows·WSL 항목: 해당 없음
 ```
 
-자세한 판정 기준은 [저장소 보완 점검](docs/repository-audit.md)과 [증거 인덱스](docs/evidence-index.md)를 확인합니다.
+현재 반영 사항과 남은 수동 작업은 [저장소 보완 점검](docs/repository-audit.md), 증거 상태는 [증거 인덱스](docs/evidence-index.md)에서 관리합니다.
 
 ---
 
@@ -83,15 +83,23 @@ codyssey-training-e1-1/
 ├── .github/workflows/validate.yml
 ├── .vscode/
 ├── scripts/
+│   ├── ci/
+│   │   ├── check-dockerfile.sh
+│   │   ├── check-markdown-links.py
+│   │   └── check-powershell-syntax.ps1
 │   ├── macos/
 │   ├── windows/
 │   │   ├── setup-wsl.ps1
 │   │   ├── open-vscode-wsl.ps1
 │   │   └── collect-wsl-host-evidence.ps1
 │   └── ubuntu/
+│       ├── lib/redact.sh
 │       ├── verify-remote-workspace.sh
 │       ├── verify-wsl-workspace.sh
 │       ├── select-port.sh
+│       ├── collect-environment.sh
+│       ├── collect-terminal-permissions.sh
+│       ├── collect-docker-evidence.sh
 │       ├── collect-evidence.sh
 │       └── validate-repository.sh
 ├── site/index.html
@@ -102,11 +110,23 @@ codyssey-training-e1-1/
     └── screenshots/
 ```
 
-전체 트리는 [docs/repository-structure.md](docs/repository-structure.md)에 있습니다.
+전체 트리는 [저장소 구조](docs/repository-structure.md)에 있습니다.
+
+## 셸 스크립트 실행 정책
+
+문서, VS Code Task와 GitHub Actions는 셸 스크립트를 다음 형식으로 실행합니다.
+
+```bash
+bash scripts/ubuntu/<script-name>.sh
+```
+
+Git 실행 비트에 의존하지 않고 동일한 실행 방식을 사용합니다.
 
 ---
 
 # 3. Windows 11 Pro + WSL2 시작
+
+상세 절차는 [Windows·WSL 가이드](docs/windows-wsl.md)를 기준으로 수행합니다.
 
 ## 3.1 설치 위치
 
@@ -118,17 +138,17 @@ codyssey-training-e1-1/
 | Ubuntu 데이터 위치 | `C:\WSL\codyssey-ubuntu24` |
 | 프로젝트 위치 | `/home/<사용자>/codyssey-training/codyssey-training-e1-1` |
 
-Ubuntu 배포판 데이터와 프로젝트 작업 폴더를 혼동하지 않습니다. Git·Docker·권한 실습은 `/mnt/c/...`가 아니라 WSL Linux 홈의 `/home/...`에서 수행합니다.
+Git·Docker·권한 실습은 `/mnt/c/...`가 아니라 WSL Linux 홈의 `/home/...`에서 수행합니다.
 
 ## 3.2 WSL 설치
 
-관리자 권한 Windows Terminal 또는 PowerShell에서 실행합니다.
+관리자 권한 PowerShell:
 
 ```powershell
 wsl.exe --install --no-distribution
 ```
 
-재시작이 요구되면 Windows를 재시작합니다. 이후:
+재시작 후:
 
 ```powershell
 wsl.exe --update
@@ -136,19 +156,10 @@ wsl.exe --set-default-version 2
 wsl.exe --version
 wsl.exe --status
 wsl.exe --help | Select-String -SimpleMatch "--location"
-```
 
-설치 루트를 만들고 온라인 배포판을 확인합니다.
-
-```powershell
 New-Item -ItemType Directory -Force -Path "C:\WSL"
-Test-Path "C:\WSL"
 wsl.exe --list --online
-```
 
-Ubuntu 24.04를 지정 위치에 설치합니다.
-
-```powershell
 wsl.exe --install `
   --distribution Ubuntu-24.04 `
   --location "C:\WSL\codyssey-ubuntu24" `
@@ -160,16 +171,14 @@ wsl.exe -d Ubuntu-24.04
 
 `Ubuntu-24.04`가 이미 설치되어 있다면 덮어쓰거나 자동으로 unregister하지 않습니다.
 
-## 3.3 설치 스크립트
-
-저장소의 PowerShell 스크립트에 접근할 수 있는 경우:
+설치 보조 스크립트:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\windows\setup-wsl.ps1
 ```
 
-## 3.4 WSL 저장소 clone
+## 3.3 Ubuntu 저장소
 
 ```bash
 sudo apt update
@@ -178,7 +187,6 @@ sudo apt install -y \
 
 mkdir -p ~/codyssey-training
 cd ~/codyssey-training
-
 git clone https://github.com/gahyun1004/codyssey-training-e1-1.git
 cd codyssey-training-e1-1
 
@@ -187,28 +195,21 @@ git remote -v
 pwd
 ```
 
-## 3.5 VS Code Remote-WSL
+## 3.4 VS Code와 Docker
 
-Windows에서 WSL 확장을 설치합니다.
+Windows PowerShell:
 
 ```powershell
 code --install-extension ms-vscode-remote.remote-wsl
 ```
 
-WSL Ubuntu의 저장소 루트에서:
+WSL Ubuntu 저장소 루트:
 
 ```bash
 code .
 ```
 
-성공 기준:
-
-- VS Code 왼쪽 아래 `WSL: Ubuntu-24.04`
-- Explorer 최상단이 `codyssey-training-e1-1`
-- 새 터미널이 bash
-- `pwd`와 Git root가 저장소 루트
-
-## 3.6 Docker Desktop
+Docker Desktop:
 
 ```text
 Settings
@@ -222,17 +223,19 @@ Settings
 → Apply & Restart
 ```
 
-WSL Ubuntu에서 확인합니다.
+Docker 설정 전 WSL 사전 검증:
 
 ```bash
-docker --version
-docker context show
-docker version
-docker info
-docker run --rm hello-world
+bash scripts/ubuntu/verify-wsl-workspace.sh --skip-docker
 ```
 
-Docker Desktop을 사용하는 경우 WSL 안에 Docker Engine을 중복 설치하지 않습니다.
+Docker 포함 최종 검증:
+
+```bash
+bash scripts/ubuntu/verify-wsl-workspace.sh
+```
+
+기본 검증은 Docker CLI 또는 Server 연결이 실패하면 종료 코드 1로 실패합니다.
 
 ---
 
@@ -257,25 +260,29 @@ code --new-window \
   'cd ~/codyssey-training/codyssey-training-e1-1 && pwd -P')"
 ```
 
-Mac에서 저장소 스크립트에 접근할 수 있는 경우:
+저장소 스크립트 사용:
 
 ```bash
 bash scripts/open-vscode-remote.sh
 ```
 
-성공 기준:
+Docker 설정 전 사전 검증:
 
-- VS Code 왼쪽 아래 `SSH: codyssey-training@orb`
-- Ubuntu 24.04
-- bash
-- `pwd`와 Git root가 저장소 루트
-- Docker Client·Server 연결 성공
+```bash
+bash scripts/ubuntu/verify-remote-workspace.sh --skip-docker
+```
+
+Docker 포함 최종 검증:
+
+```bash
+bash scripts/ubuntu/verify-remote-workspace.sh
+```
 
 ---
 
-# 5. VS Code 검증과 로그 수집
+# 5. VS Code 검증과 증거 수집
 
-## 5.1 Task
+## 5.1 VS Code Task
 
 ```text
 Ctrl/Command + Shift + P
@@ -284,14 +291,17 @@ Ctrl/Command + Shift + P
 
 | Task | 용도 |
 |---|---|
-| `E1-1: Verify Ubuntu Remote Workspace` | OrbStack·일반 Ubuntu 검증 |
-| `E1-1: Verify WSL Ubuntu Workspace` | WSL2 Ubuntu 검증 |
-| `E1-1: Collect Basic Evidence Logs` | 환경·터미널·권한·Docker 기본 로그 생성 |
-| `E1-1: Validate Repository` | 구조·셸·JSON 정적 검증 |
+| `E1-1: Verify Ubuntu Remote Workspace` | OrbStack·일반 Ubuntu와 Docker 검증 |
+| `E1-1: Verify WSL Ubuntu Workspace` | WSL2 Ubuntu와 Docker 검증 |
+| `E1-1: Verify WSL Before Docker` | Docker 설정 전 WSL 사전 검증 |
+| `E1-1: Collect Environment Evidence` | OS·Git·workspace 로그 생성 |
+| `E1-1: Collect Terminal and Permission Evidence` | 터미널·권한 로그 생성 |
+| `E1-1: Collect Docker Evidence` | Docker·hello-world 로그 생성 |
+| `E1-1: Collect All Basic Evidence` | 모든 기본 로그 순차 생성 |
+| `E1-1: Collect Evidence Without Docker` | Docker 제외 기본 로그 생성 |
+| `E1-1: Validate Repository` | 구조·문법·링크·Dockerfile 검증 |
 
 ## 5.2 Windows 호스트 로그
-
-Windows PowerShell에서:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
@@ -304,22 +314,40 @@ Set-ExecutionPolicy -Scope Process Bypass
 docs/logs/windows-wsl-host.txt
 ```
 
-## 5.3 Ubuntu 기본 로그
+## 5.3 단계별 Ubuntu 로그
 
-WSL 또는 OrbStack Ubuntu 저장소 루트에서:
+환경·Git:
+
+```bash
+bash scripts/ubuntu/collect-environment.sh
+```
+
+터미널·권한:
+
+```bash
+bash scripts/ubuntu/collect-terminal-permissions.sh
+```
+
+Docker:
+
+```bash
+bash scripts/ubuntu/collect-docker-evidence.sh
+```
+
+전체:
 
 ```bash
 bash scripts/ubuntu/collect-evidence.sh
 ```
 
-생성 범위:
+Docker 제외 또는 Docker 전용:
 
-- 환경
-- 터미널 기본 명령
-- 파일·디렉터리 권한
-- Docker 기본 운영
-- hello-world
-- WSL 환경일 경우 WSL·Docker 로그
+```bash
+bash scripts/ubuntu/collect-evidence.sh --skip-docker
+bash scripts/ubuntu/collect-evidence.sh --docker-only
+```
+
+수집 스크립트는 URL 자격정보와 사용자 홈 경로를 기본 마스킹합니다. **자동 마스킹은 보조 장치이므로 커밋 전에 로그 전체를 직접 검토합니다.**
 
 `attach`, 커스텀 build, 포트, 바인드 마운트, 볼륨과 화면 캡처는 직접 수행합니다.
 
@@ -329,9 +357,7 @@ bash scripts/ubuntu/collect-evidence.sh
 
 ## 6.1 터미널과 권한
 
-기본 로그는 수집 스크립트로 만들 수 있습니다. 세부 명령과 결과 기록은 [터미널 및 권한 실습](docs/terminal-and-permissions.md)에 정리합니다.
-
-권한 해석:
+세부 명령과 관찰 항목은 [터미널 및 권한 실습](docs/terminal-and-permissions.md)에 기록합니다.
 
 ```text
 755 = 소유자 rwx, 그룹 r-x, 기타 r-x
@@ -346,7 +372,7 @@ docker run -dit --name e1-1-attach ubuntu:24.04 bash
 docker attach e1-1-attach
 ```
 
-컨테이너 내부에서:
+컨테이너 내부:
 
 ```bash
 pwd
@@ -355,14 +381,14 @@ echo "inside ubuntu container"
 cat /etc/os-release
 ```
 
-종료하지 않고 분리:
+컨테이너를 종료하지 않고 분리합니다.
 
 ```text
 Ctrl + P
 Ctrl + Q
 ```
 
-호스트 Ubuntu 터미널에서:
+호스트 Ubuntu 터미널:
 
 ```bash
 docker exec e1-1-attach \
@@ -373,12 +399,16 @@ docker exec e1-1-attach \
 
 ## 6.3 커스텀 이미지 build
 
-현재 Dockerfile은 버전을 명시한 공식 이미지 `nginx:1.30.4-alpine3.24`를 사용합니다.
+현재 Dockerfile은 버전과 multi-platform index digest를 고정합니다.
+
+```dockerfile
+FROM nginx:1.30.4-alpine3.24@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46
+```
 
 ```bash
 {
-  echo '$ docker build -t codyssey-e1-1-web:1.0 .'
-  docker build -t codyssey-e1-1-web:1.0 .
+  echo '$ docker build --pull -t codyssey-e1-1-web:1.0 .'
+  docker build --pull -t codyssey-e1-1-web:1.0 .
   docker image inspect codyssey-e1-1-web:1.0 \
     --format 'ID={{.Id}} CREATED={{.Created}} SIZE={{.Size}}'
 } 2>&1 | tee docs/logs/docker-build.txt
@@ -386,10 +416,10 @@ docker exec e1-1-attach \
 
 설계 이유는 [커스텀 이미지 설계](docs/image-design.md)에 기록합니다.
 
-## 6.4 포트 선택과 접속
+## 6.4 포트 매핑
 
 ```bash
-HOST_PORT="$(scripts/ubuntu/select-port.sh)"
+HOST_PORT="$(bash scripts/ubuntu/select-port.sh)"
 printf 'HOST_PORT=%s\n' "$HOST_PORT" > .env.local
 source .env.local
 
@@ -419,7 +449,7 @@ docker run -d \
   --name e1-1-bind \
   -p "127.0.0.1:${HOST_PORT}:80" \
   -v "$PWD/bind-test:/usr/share/nginx/html:ro" \
-  nginx:1.30.4-alpine3.24
+  nginx:1.30.4-alpine3.24@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46
 
 curl -fsS "http://localhost:${HOST_PORT}"
 ```
@@ -438,7 +468,6 @@ curl -fsS "http://localhost:${HOST_PORT}"
 
 ```bash
 {
-  echo '$ docker volume create e1-1-data'
   docker volume create e1-1-data
 
   docker rm -f e1-1-volume-1 2>/dev/null || true
@@ -464,60 +493,17 @@ curl -fsS "http://localhost:${HOST_PORT}"
 
 마지막 명령에서 `persistent data`가 출력되어야 합니다.
 
----
+## 6.7 증거
 
-# 7. 증거와 결과 문서
+필수 로그와 화면 파일명은 [로그 작성 규칙](docs/logs/README.md)과 [스크린샷 규칙](docs/screenshots/README.md)을 따릅니다.
 
-## 필수 로그
-
-```text
-docs/logs/environment.txt
-docs/logs/terminal-basic.txt
-docs/logs/permissions.txt
-docs/logs/docker-basic.txt
-docs/logs/hello-world.txt
-docs/logs/docker-build.txt
-docs/logs/port-mapping.txt
-docs/logs/bind-mount-after.txt
-docs/logs/volume-persistence.txt
-```
-
-Windows·WSL 추가 로그:
-
-```text
-docs/logs/windows-wsl-host.txt
-docs/logs/windows-wsl-environment.txt
-docs/logs/windows-wsl-docker.txt
-```
-
-## 필수 화면
-
-- OS·WSL 또는 OrbStack 환경
-- VS Code Remote 상태와 Git root·branch
-- 터미널과 권한 변경 전후
-- Docker Client·Server와 hello-world
-- `attach`와 `exec`
-- 이미지 build
-- 브라우저 주소창과 포트
-- 바인드 마운트 변경 전후
-- 볼륨 영속성
-- GitHub·VS Code Source Control
-
-파일명과 마스킹 규칙은 [스크린샷 안내](docs/screenshots/README.md)를 따릅니다.
-
-## 트러블슈팅
-
-실제로 발생한 오류 또는 시행착오를 [docs/troubleshooting.md](docs/troubleshooting.md)에 최소 2건 작성합니다. 예시 문구를 실제 사례처럼 작성하지 않습니다.
+실제로 발생한 오류 또는 시행착오를 [트러블슈팅](docs/troubleshooting.md)에 최소 2건 기록합니다. 예시 문구를 실제 사례처럼 작성하지 않습니다.
 
 ---
 
-# 8. Git·GitHub 제출
+# 7. Git·GitHub 제출
 
-## 8.1 GitHub CLI
-
-GitHub CLI는 선택 사항입니다. `gh`가 없더라도 `git clone`, `git push`와 GitHub 웹에서 Pull Request 생성으로 수행할 수 있습니다.
-
-## 8.2 브랜치와 커밋
+GitHub CLI는 선택 사항입니다. `git clone`, `git push`와 GitHub 웹으로도 수행할 수 있습니다.
 
 ```bash
 git switch main
@@ -544,9 +530,7 @@ git push -u origin feat/e1-1-workstation
 
 ---
 
-# 9. Clean clone 최종 검증
-
-새 폴더에서 기본 브랜치를 다시 clone합니다.
+# 8. Clean clone 최종 검증
 
 ```bash
 RETEST_DIR="$HOME/codyssey-retest/e1-1-$(date +%Y%m%d-%H%M%S)"
@@ -560,8 +544,8 @@ git status -sb
 git rev-parse HEAD
 bash scripts/ubuntu/validate-repository.sh
 
-docker build -t codyssey-e1-1-web:retest .
-HOST_PORT="$(scripts/ubuntu/select-port.sh 18080 18081 28080)"
+docker build --pull -t codyssey-e1-1-web:retest .
+HOST_PORT="$(bash scripts/ubuntu/select-port.sh 18080 18081 28080)"
 
 docker run -d \
   --name e1-1-retest \
@@ -574,18 +558,28 @@ docker rm -f e1-1-retest
 
 실제 경로, commit SHA, build·run·HTTP 결과는 [최종 검증 결과](docs/test-results.md)에 기록합니다.
 
-GitHub Actions의 `Validate E1-1 Repository` workflow도 구조, 셸·JSON, Docker build와 HTTP smoke test를 검증합니다. 자동 검증은 개인 장비의 화면 증거를 대신하지 않습니다.
+GitHub Actions의 `Validate E1-1 Repository` workflow는 다음을 검사합니다.
+
+- Ubuntu 24.04 runner
+- checkout Action의 전체 commit SHA 고정
+- 필수 파일, 셸·JSON과 Markdown 상대 링크
+- ShellCheck
+- PowerShell parser와 PSScriptAnalyzer
+- Dockerfile 태그·digest 고정
+- Docker build와 HTTP smoke test
+
+자동 검증은 개인 장비의 화면 증거를 대신하지 않습니다.
 
 ---
 
-# 10. 평가 전 체크리스트
+# 9. 평가 전 체크리스트
 
 ## 환경
 
 - [ ] Windows·WSL 또는 macOS·OrbStack 중 실제 수행 플랫폼 확정
 - [ ] 사용하지 않은 플랫폼을 `해당 없음`으로 표시
 - [ ] Ubuntu 24.04, bash, workspace와 Git root 확인
-- [ ] Docker Client·Server 연결 확인
+- [ ] Docker Client·Server 연결 포함 최종 검증 성공
 
 ## 미션
 
@@ -595,7 +589,7 @@ GitHub Actions의 `Validate E1-1 Repository` workflow도 구조, 셸·JSON, Dock
 - [ ] hello-world 실행
 - [ ] Ubuntu 컨테이너 내부 명령 수행
 - [ ] `attach`와 `exec` 차이 관찰
-- [ ] 커스텀 Dockerfile build
+- [ ] digest가 고정된 커스텀 Dockerfile build
 - [ ] 베이스 이미지와 커스텀 항목 설명
 - [ ] 포트 매핑과 브라우저 접속
 - [ ] 바인드 마운트 변경 전후 확인
@@ -603,11 +597,12 @@ GitHub Actions의 `Validate E1-1 Repository` workflow도 구조, 셸·JSON, Dock
 
 ## 증거와 제출
 
-- [ ] 필수 로그 생성 및 검토
+- [ ] 단계별 로그 생성 및 자동 마스킹 결과 검토
 - [ ] 필수 스크린샷 저장
 - [ ] 실제 트러블슈팅 2건 이상
 - [ ] Git·GitHub·VS Code 연동 증거
 - [ ] clean clone build·run·HTTP 검증
+- [ ] GitHub Actions 검증 결과 확인
 - [ ] `docs/evidence-index.md` 상태가 실제 결과와 일치
 - [ ] 민감정보 미포함
 
