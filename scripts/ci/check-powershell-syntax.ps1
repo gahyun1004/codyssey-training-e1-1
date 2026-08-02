@@ -18,22 +18,19 @@ Get-ChildItem -Path (Join-Path $repositoryRoot "scripts") -Recurse -Filter "*.ps
             [ref]$parseErrors
         ) | Out-Null
 
+        $relative = [System.IO.Path]::GetRelativePath(
+            $repositoryRoot,
+            $_.FullName
+        )
+
         if ($parseErrors.Count -gt 0) {
             foreach ($parseError in $parseErrors) {
-                $relative = [System.IO.Path]::GetRelativePath(
-                    $repositoryRoot,
-                    $_.FullName
-                )
                 $failures.Add(
-                    "$relative:$($parseError.Extent.StartLineNumber): $($parseError.Message)"
+                    "${relative}:$($parseError.Extent.StartLineNumber): $($parseError.Message)"
                 )
             }
         }
         else {
-            $relative = [System.IO.Path]::GetRelativePath(
-                $repositoryRoot,
-                $_.FullName
-            )
             Write-Host "[PASS] PowerShell syntax: $relative"
         }
     }
