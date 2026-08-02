@@ -99,7 +99,8 @@ ssh codyssey-training@orb
 패키지 설치:
 
 ```bash
-sudo apt update
+sudo apt update && sudo apt upgrade -y
+
 sudo apt install -y \
   ca-certificates curl wget git gnupg nano vim tree jq tar unzip zip
 ```
@@ -118,7 +119,7 @@ docker run --rm hello-world
 `docker` 명령이 없을 때만 OrbStack의 Docker CLI 연결을 확인합니다.
 
 ```bash
-mac link docker
+sudo mac link docker
 hash -r
 command -v docker
 docker version
