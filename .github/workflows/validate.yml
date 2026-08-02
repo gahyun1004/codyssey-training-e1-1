@@ -11,26 +11,60 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        # actions/checkout v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Install ShellCheck when missing
+        run: |
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y shellcheck
+          fi
 
       - name: Validate repository structure and syntax
         run: bash scripts/ubuntu/validate-repository.sh
 
+      - name: Run ShellCheck
+        run: |
+          find scripts -type f -name '*.sh' -print0 \
+            | xargs -0 shellcheck -x
+
+      - name: Validate PowerShell syntax
+        shell: pwsh
+        run: ./scripts/ci/check-powershell-syntax.ps1
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
+          $results = Invoke-ScriptAnalyzer -Path scripts -Recurse -Severity Error
+          $results | Format-Table -AutoSize
+          if ($results.Count -gt 0) { exit 1 }
+
       - name: Build Docker image
-        run: docker build -t codyssey-e1-1-web:ci .
+        run: docker build --pull -t codyssey-e1-1-web:ci .
 
       - name: Run HTTP smoke test
         run: |
-          docker run -d --name e1-1-ci -p 127.0.0.1:18080:80 codyssey-e1-1-web:ci
+          docker run -d \
+            --name e1-1-ci \
+            -p 127.0.0.1:18080:80 \
+            codyssey-e1-1-web:ci
+
           for attempt in {1..20}; do
-            if curl -fsS http://127.0.0.1:18080/ | grep -q "Codyssey E1-1"; then
+            if curl -fsS http://127.0.0.1:18080/ \
+              | grep -q "Codyssey E1-1"; then
               exit 0
             fi
             sleep 1
           done
+
           docker logs e1-1-ci
           exit 1
 
