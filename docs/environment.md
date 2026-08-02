@@ -1,21 +1,33 @@
 # 실행 환경
 
-> 실제 수행 결과로 이 문서를 채웁니다. 사용하지 않은 플랫폼 항목은 `해당 없음`으로 표시합니다.
+> 실제 수행 결과로 이 문서를 채웁니다. 사용하지 않은 플랫폼은 `해당 없음`으로 표시합니다. 안내 문구만 채운 상태는 완료가 아닙니다.
 
-## 공통 정보
+## 1. 수행 플랫폼 선택
 
-- 수행 플랫폼:
+- 선택한 호스트 OS:
+- 선택한 Linux 환경:
+- VS Code 연결 방식:
+- Docker backend:
+- 수행 날짜:
+- 검증한 Git commit SHA:
+
+## 2. 공통 정보
+
 - Ubuntu:
 - Shell:
 - Git:
-- GitHub CLI:
+- GitHub CLI: 설치 / 미설치 / 해당 없음
 - VS Code:
 - Docker Client:
 - Docker Server:
 - 작업 브랜치:
+- Git root:
 
-## macOS + OrbStack
+## 3. macOS + OrbStack
 
+사용하지 않았다면 첫 줄에 `해당 없음 — Windows 11 Pro + WSL2에서 수행`이라고 기록합니다.
+
+- 상태:
 - macOS:
 - Terminal:
 - OrbStack:
@@ -23,8 +35,11 @@
 - Remote-SSH host: `codyssey-training@orb`
 - VS Code 상태 표시:
 
-## Windows 11 Pro + WSL2
+## 4. Windows 11 Pro + WSL2
 
+사용하지 않았다면 첫 줄에 `해당 없음 — macOS + OrbStack에서 수행`이라고 기록합니다.
+
+- 상태:
 - Windows 제품명:
 - Windows 버전:
 - OS 빌드:
@@ -42,30 +57,40 @@
 - Docker Desktop:
 - Docker Desktop WSL Integration:
 
-## Git 설정 확인
+## 5. Git 설정 확인
 
 - `user.name`:
-- `user.email`: 공개 시 일부 마스킹
+- `user.email`: 공개 저장소에서는 일부 마스킹
 - `init.defaultBranch`: `main`
 - `remote.origin.url`:
+- 현재 branch:
+- 최신 commit:
 
-## Ubuntu 검증 명령
+## 6. Ubuntu 검증 명령
 
 ```bash
 cat /etc/os-release
 uname -a
 echo "${WSL_DISTRO_NAME:-not-wsl}"
 echo "$SHELL"
+ps -p $$ -o comm=
 pwd
 git rev-parse --show-toplevel
+git branch --show-current
 git --version
-gh --version | head -n 1
 docker --version
 docker version
 git config --list
 ```
 
-## Windows 호스트 검증 명령
+GitHub CLI는 선택 사항입니다. 설치한 경우에만 다음을 확인합니다.
+
+```bash
+gh --version | head -n 1
+gh auth status
+```
+
+## 7. Windows 호스트 검증 명령
 
 ```powershell
 Get-ComputerInfo |
@@ -80,8 +105,26 @@ Get-ChildItem -Force "C:\WSL\codyssey-ubuntu24"
 code --version
 ```
 
-## 원본 로그
+## 8. 로그 생성 도구
+
+Windows PowerShell에서 WSL 저장소의 호스트 로그를 생성합니다.
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\scripts\windows\collect-wsl-host-evidence.ps1
+```
+
+WSL·Ubuntu 저장소 루트에서 기본 환경·터미널·권한·Docker 로그를 생성합니다.
+
+```bash
+bash scripts/ubuntu/collect-evidence.sh
+```
+
+자동 생성 로그는 반드시 내용을 검토하고 민감정보를 마스킹한 뒤 커밋합니다.
+
+## 9. 원본 로그
 
 - 공통 Ubuntu: `docs/logs/environment.txt`
 - Windows 호스트: `docs/logs/windows-wsl-host.txt`
 - WSL Ubuntu: `docs/logs/windows-wsl-environment.txt`
+- WSL Docker: `docs/logs/windows-wsl-docker.txt`
