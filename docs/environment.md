@@ -33,8 +33,9 @@
 - 배포판: `Ubuntu-24.04`
 - WSL mode: `2`
 - WSL 설치 루트: `C:\WSL`
-- Ubuntu 배포판 설치 위치: `C:\WSL\Ubuntu-24.04`
-- `Test-Path "C:\WSL\Ubuntu-24.04"` 결과:
+- 설치 디렉터리 이름: `codyssey-ubuntu24`
+- Ubuntu 배포판 설치 위치: `C:\WSL\codyssey-ubuntu24`
+- `Test-Path "C:\WSL\codyssey-ubuntu24"` 결과:
 - `WSL_DISTRO_NAME`:
 - 프로젝트 저장소 경로: `/home/<사용자>/codyssey-training/codyssey-training-e1-1`
 - VS Code 상태 표시: `WSL: Ubuntu-24.04`
@@ -74,8 +75,8 @@ wsl.exe --version
 wsl.exe --status
 wsl.exe --help | Select-String -SimpleMatch "--location"
 wsl.exe --list --verbose
-Test-Path "C:\WSL\Ubuntu-24.04"
-Get-ChildItem -Force "C:\WSL\Ubuntu-24.04"
+Test-Path "C:\WSL\codyssey-ubuntu24"
+Get-ChildItem -Force "C:\WSL\codyssey-ubuntu24"
 code --version
 ```
 
