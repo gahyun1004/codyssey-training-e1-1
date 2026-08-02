@@ -80,9 +80,9 @@ function Add-CommandResult {
         $lines.Add((Protect-SensitiveText $result.TrimEnd()))
     }
     catch {
-        $lines.Add(
+        $lines.Add((
             Protect-SensitiveText "[ERROR] $($_.Exception.Message)"
-        )
+        ))
         throw
     }
 }
