@@ -1,0 +1,24 @@
+{
+  "terminal.integrated.profiles.linux": {
+    "Ubuntu Bash (login)": {
+      "path": "/bin/bash",
+      "args": [
+        "-l"
+      ],
+      "icon": "terminal-bash",
+      "overrideName": true
+    }
+  },
+  "terminal.integrated.defaultProfile.linux": "Ubuntu Bash (login)",
+  "terminal.integrated.automationProfile.linux": {
+    "path": "/bin/bash",
+    "args": [
+      "-l"
+    ]
+  },
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.splitCwd": "workspaceRoot",
+  "terminal.integrated.shellIntegration.enabled": true,
+  "terminal.integrated.tabs.title": "${workspaceFolderName}${separator}${process}",
+  "files.eol": "\n"
+}
