@@ -41,35 +41,19 @@ wsl.exe --install --no-distribution
 
 재시작이 요구되면 Windows를 재시작합니다. WSL이 이미 설치되어 있다면 위 명령은 건너뜁니다.
 
-재시작 후:
-
 ```powershell
 wsl.exe --update
 wsl.exe --set-default-version 2
 wsl.exe --version
 wsl.exe --status
-```
-
----
-
-## 3. 지정 위치 설치 지원 확인
-
-```powershell
 wsl.exe --help | Select-String -SimpleMatch "--location"
 ```
 
-`--location`이 표시되어야 합니다. 표시되지 않으면 다음 순서로 확인합니다.
-
-1. `wsl.exe --update`
-2. Windows Update
-3. Microsoft Store의 WSL 업데이트
-4. Windows 재시작
+`--location`이 표시되지 않으면 WSL, Windows Update와 Microsoft Store WSL을 업데이트한 뒤 재시작합니다.
 
 ---
 
-## 4. Ubuntu 24.04 설치
-
-설치 루트를 만들고 온라인 배포판 이름을 확인합니다.
+## 3. Ubuntu 24.04 지정 위치 설치
 
 ```powershell
 New-Item -ItemType Directory -Force -Path "C:\WSL"
@@ -81,8 +65,6 @@ wsl.exe --list --online
 
 - `Test-Path` 결과가 `True`
 - 온라인 목록에 `Ubuntu-24.04`가 있음
-
-지정 위치 설치:
 
 ```powershell
 wsl.exe --install `
@@ -98,40 +80,16 @@ wsl.exe -d Ubuntu-24.04
 
 > `Ubuntu-24.04`가 이미 설치되어 있다면 덮어쓰거나 자동으로 unregister하지 않습니다. 기존 배포판 이동은 백업·export·unregister·import가 필요한 별도 작업입니다.
 
----
-
-## 5. 설치 보조 스크립트
-
-Windows에서 저장소 스크립트에 접근할 수 있는 경우:
+설치 보조 스크립트:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\windows\setup-wsl.ps1
 ```
 
-기본값:
-
-```text
-Distribution          = Ubuntu-24.04
-InstallRoot           = C:\WSL
-InstallDirectoryName  = codyssey-ubuntu24
-InstallPath           = C:\WSL\codyssey-ubuntu24
-```
-
-다른 설치 루트:
-
-```powershell
-.\scripts\windows\setup-wsl.ps1 `
-  -Distribution "Ubuntu-24.04" `
-  -InstallRoot "D:\WSL" `
-  -InstallDirectoryName "codyssey-ubuntu24"
-```
-
-스크립트는 기존 배포판을 자동 삭제하거나 이동하지 않습니다.
-
 ---
 
-## 6. 설치 상태 확인
+## 4. 설치 상태 확인
 
 ```powershell
 Test-Path "C:\WSL\codyssey-ubuntu24"
@@ -157,7 +115,7 @@ wsl.exe --set-default Ubuntu-24.04
 
 ---
 
-## 7. Ubuntu 초기 설정
+## 5. Ubuntu 초기 설정
 
 ```powershell
 wsl.exe -d Ubuntu-24.04
@@ -181,28 +139,22 @@ printf 'WSL_DISTRO_NAME=%s\n' "${WSL_DISTRO_NAME:-}"
 - `WSL_DISTRO_NAME=Ubuntu-24.04`
 - `SHELL=/bin/bash`
 
-패키지 설치:
-
 ```bash
 sudo apt update
 sudo apt install -y \
   ca-certificates curl wget git gnupg nano vim tree jq tar unzip zip
-```
 
-Git 설정:
-
-```bash
 git config --global init.defaultBranch main
 git config --global user.name "본인의 Git 이름"
 git config --global user.email "본인의 GitHub 이메일"
 git config --list
 ```
 
-GitHub CLI는 선택 사항입니다. 필수 clone·push는 `git`만으로 수행할 수 있습니다.
+GitHub CLI는 선택 사항입니다. clone과 push는 `git`만으로 수행할 수 있습니다.
 
 ---
 
-## 8. 프로젝트 clone
+## 6. 프로젝트 clone
 
 ```bash
 mkdir -p ~/codyssey-training
@@ -226,9 +178,9 @@ pwd
 
 ---
 
-## 9. VS Code Remote-WSL
+## 7. VS Code Remote-WSL
 
-Windows PowerShell에서 확장을 설치합니다.
+Windows PowerShell에서:
 
 ```powershell
 code --version
@@ -255,25 +207,17 @@ Set-ExecutionPolicy -Scope Process Bypass
 - 새 터미널 프로세스가 `bash`
 - `pwd`와 Git root가 저장소 루트
 
-검증 Task:
-
-```text
-Ctrl + Shift + P
-→ Tasks: Run Task
-→ E1-1: Verify WSL Ubuntu Workspace
-```
-
-직접 실행:
+Docker Desktop 설정 전 사전 검증:
 
 ```bash
-bash scripts/ubuntu/verify-wsl-workspace.sh
+bash scripts/ubuntu/verify-wsl-workspace.sh --skip-docker
 ```
+
+이 결과는 Docker 포함 최종 환경 완료 증거가 아닙니다.
 
 ---
 
-## 10. Docker Desktop WSL Integration
-
-Docker Desktop 설정:
+## 8. Docker Desktop WSL Integration
 
 ```text
 Settings
@@ -299,42 +243,71 @@ docker run --rm hello-world
 
 Docker Desktop을 사용하는 경우 WSL Ubuntu에 Docker Engine을 중복 설치하지 않습니다.
 
+Docker 포함 최종 검증:
+
+```bash
+bash scripts/ubuntu/verify-wsl-workspace.sh
+```
+
+Docker CLI가 없거나 Server 연결이 실패하면 이 검증도 실패합니다.
+
 ---
 
-## 11. Windows 호스트 로그 생성
+## 9. Windows 호스트 로그
 
-PowerShell 상대 경로 혼동을 방지하기 위해 전용 스크립트를 사용합니다. 스크립트가 WSL 저장소의 Windows 경로를 자동으로 계산해 로그를 저장합니다.
+PowerShell 상대 경로 혼동을 방지하기 위해 전용 스크립트를 사용합니다. 스크립트가 WSL 저장소의 Windows 경로를 계산해 로그를 저장합니다.
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\windows\collect-wsl-host-evidence.ps1
 ```
 
-기본 저장 위치:
+생성 파일:
 
 ```text
-WSL 저장소/docs/logs/windows-wsl-host.txt
+docs/logs/windows-wsl-host.txt
 ```
 
-다른 저장소 상대 경로:
-
-```powershell
-.\scripts\windows\collect-wsl-host-evidence.ps1 `
-  -Distribution "Ubuntu-24.04" `
-  -InstallPath "C:\WSL\codyssey-ubuntu24" `
-  -RepositoryPath "codyssey-training/codyssey-training-e1-1"
-```
-
-로그에 사용자 이름이나 내부 경로가 포함되면 필요한 부분을 마스킹합니다.
+스크립트는 URL 자격정보와 Windows·WSL 사용자 홈 경로를 기본적으로 마스킹합니다. 자동 마스킹 후에도 로그 전체를 직접 검토합니다.
 
 ---
 
-## 12. Ubuntu 로그 생성
+## 10. 단계별 Ubuntu 로그
 
-WSL Ubuntu 저장소 루트에서:
+환경·Git:
+
+```bash
+bash scripts/ubuntu/collect-environment.sh
+```
+
+터미널·권한:
+
+```bash
+bash scripts/ubuntu/collect-terminal-permissions.sh
+```
+
+Docker:
+
+```bash
+bash scripts/ubuntu/collect-docker-evidence.sh
+```
+
+전체 순차 실행:
 
 ```bash
 bash scripts/ubuntu/collect-evidence.sh
+```
+
+Docker 설정 전에는:
+
+```bash
+bash scripts/ubuntu/collect-evidence.sh --skip-docker
+```
+
+Docker만 다시 수집할 때는:
+
+```bash
+bash scripts/ubuntu/collect-evidence.sh --docker-only
 ```
 
 생성되는 주요 로그:
@@ -353,7 +326,7 @@ docs/logs/hello-world.txt
 
 ---
 
-## 13. 필수 화면 증거
+## 11. 필수 화면 증거
 
 - Windows 11 Pro 제품명·버전·빌드
 - `wsl.exe --version`
@@ -368,7 +341,7 @@ docs/logs/hello-world.txt
 
 ---
 
-## 14. 대표 오류
+## 12. 대표 오류
 
 ### `--location`이 없음
 
@@ -395,11 +368,11 @@ wsl.exe --list --verbose
 
 ### VS Code가 Windows 로컬 창으로 열림
 
-WSL Ubuntu 저장소에서 다시 실행합니다.
-
 ```bash
 code .
 ```
+
+WSL Ubuntu 저장소에서 다시 실행합니다.
 
 ### Docker Server 연결 실패
 
@@ -416,7 +389,7 @@ wsl.exe --shutdown
 
 ---
 
-## 15. 최종 체크리스트
+## 13. 최종 체크리스트
 
 - [ ] Windows 11 Pro 확인
 - [ ] WSL 설치·업데이트
@@ -427,10 +400,11 @@ wsl.exe --shutdown
 - [ ] 프로젝트를 `/home/...`에 clone
 - [ ] VS Code Remote-WSL 연결
 - [ ] Docker Desktop WSL Integration 활성화
-- [ ] Windows 호스트 로그 생성
-- [ ] Ubuntu 기본 로그 생성
+- [ ] Docker 포함 WSL 검증 성공
+- [ ] Windows 호스트 로그 생성·검토
+- [ ] 단계별 Ubuntu 로그 생성·검토
 - [ ] 필수 화면 캡처
-- [ ] 민감정보 확인
+- [ ] 자동 마스킹 후 민감정보 재확인
 
 ---
 
