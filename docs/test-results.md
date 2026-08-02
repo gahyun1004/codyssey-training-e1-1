@@ -1,5 +1,33 @@
 # 최종 검증 결과
 
+## 수행 플랫폼
+
+- 호스트 OS:
+- Linux 환경:
+- VS Code 연결 방식:
+- Docker backend:
+
+## macOS + OrbStack 검증
+
+- OrbStack machine:
+- Remote-SSH:
+- Ubuntu 24.04:
+- bash:
+- workspace 경로:
+- 해당 없음 여부:
+
+## Windows 11 Pro + WSL2 검증
+
+- Windows 11 Pro:
+- WSL 버전:
+- 배포판: `Ubuntu-24.04`
+- WSL mode: `2`
+- Remote-WSL:
+- bash:
+- workspace 경로:
+- Docker Desktop WSL Integration:
+- 해당 없음 여부:
+
 ## 작업 브랜치 검증
 
 - 브랜치:

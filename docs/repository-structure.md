@@ -51,6 +51,17 @@ codyssey-training-e1-1/
     ├── troubleshooting.md
     ├── logs/README.md
     └── screenshots/
+        ├── README.md
+        ├── environment/.gitkeep
+        ├── windows-wsl/.gitkeep
+        ├── terminal/.gitkeep
+        ├── permissions/.gitkeep
+        ├── docker/.gitkeep
+        ├── port-mapping/.gitkeep
+        ├── bind-mount/.gitkeep
+        ├── volume/.gitkeep
+        ├── github/.gitkeep
+        └── vscode/.gitkeep
 ```
 
 ## 플랫폼별 진입점

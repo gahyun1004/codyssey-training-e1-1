@@ -5,6 +5,7 @@
 ```text
 docs/screenshots/
 ├── environment/
+├── windows-wsl/
 ├── terminal/
 ├── permissions/
 ├── docker/
@@ -19,6 +20,9 @@ docs/screenshots/
 
 ```text
 environment/01-orbstack-ubuntu.png
+windows-wsl/01-windows-11-pro-version.png
+windows-wsl/02-wsl-list-verbose.png
+windows-wsl/03-docker-desktop-wsl-integration.png
 terminal/01-basic-commands.png
 permissions/01-file-permission.png
 permissions/02-directory-permission.png
@@ -31,10 +35,21 @@ volume/01-volume-persistence.png
 github/01-vscode-github-login.png
 github/02-source-control-repository.png
 vscode/01-remote-ssh-path-branch.png
+vscode/02-remote-wsl-path-branch.png
 ```
 
-## 캡처 기준
+## Windows·WSL 필수 캡처
 
-- 명령어 입력과 출력 결과가 함께 보이게 한다.
-- 브라우저 캡처에는 주소창과 포트를 포함한다.
-- 토큰, 비밀번호, 이메일, 개인키, 인증 코드, 학교 내부정보를 제거하거나 마스킹한다.
+- Windows 11 Pro 버전과 빌드
+- `wsl.exe --version`
+- `wsl.exe --list --verbose`의 `Ubuntu-24.04`, `VERSION 2`
+- Docker Desktop의 `Ubuntu-24.04` WSL Integration
+- VS Code 왼쪽 아래 `WSL: Ubuntu-24.04`
+- WSL 터미널의 Ubuntu 24.04, bash, `pwd`, Git branch
+
+## 공통 캡처 기준
+
+- 명령어 입력과 출력 결과가 함께 보이게 합니다.
+- 브라우저 캡처에는 주소창과 포트를 포함합니다.
+- 토큰, 비밀번호, 이메일, 개인키, 인증 코드, 학교·기관 내부정보를 제거하거나 마스킹합니다.
+- `.gitkeep`은 증거가 아닙니다.

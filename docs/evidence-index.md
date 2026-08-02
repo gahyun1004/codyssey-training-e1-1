@@ -5,9 +5,10 @@
 | 수행 항목 | 플랫폼 | 문서 | 로그 | 스크린샷 | 상태 |
 |---|---|---|---|---|---|
 | 호스트 환경 | macOS | [environment.md](environment.md) | `logs/environment.txt` | `screenshots/environment/` | 미완료 |
-| 호스트 환경 | Windows 11 Pro | [windows-wsl.md](windows-wsl.md) | `logs/windows-wsl-host.txt` | `screenshots/environment/` | 미완료 |
+| 호스트 환경 | Windows 11 Pro | [windows-wsl.md](windows-wsl.md) | `logs/windows-wsl-host.txt` | `screenshots/windows-wsl/` | 미완료 |
 | Ubuntu 환경 | OrbStack | [macos-orbstack-guide.md](macos-orbstack-guide.md) | `logs/environment.txt` | `screenshots/environment/` | 미완료 |
-| Ubuntu 환경 | WSL2 | [windows-wsl.md](windows-wsl.md) | `logs/windows-wsl-environment.txt` | `screenshots/environment/` | 미완료 |
+| Ubuntu 환경 | WSL2 | [windows-wsl.md](windows-wsl.md) | `logs/windows-wsl-environment.txt` | `screenshots/windows-wsl/` | 미완료 |
+| Docker backend | Windows·WSL | [windows-wsl.md](windows-wsl.md) | `logs/windows-wsl-docker.txt` | `screenshots/windows-wsl/` | 미완료 |
 | VS Code 연결 | Remote-SSH | [environment.md](environment.md) | `logs/environment.txt` | `screenshots/vscode/` | 미완료 |
 | VS Code 연결 | Remote-WSL | [windows-wsl.md](windows-wsl.md) | `logs/windows-wsl-environment.txt` | `screenshots/vscode/` | 미완료 |
 | 터미널 | 공통 | [terminal-and-permissions.md](terminal-and-permissions.md) | `logs/terminal-basic.txt` | `screenshots/terminal/` | 미완료 |
