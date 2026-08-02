@@ -14,11 +14,12 @@
 | Dockerfile·웹 소스 | 준비 완료 |
 | 단계별 증거 수집·자동 마스킹 | 준비 완료 |
 | 저장소·Shell·PowerShell·Docker CI 검증 | 준비 완료 |
+| Codex 지시·작업 명세·완료 보고 체계 | 준비 완료 |
 | 실제 개인 장비 로그·스크린샷 | 미완료 |
 | 실제 트러블슈팅 2건 | 미완료 |
 | clean clone 최종 결과 기록 | 미완료 |
 
-저장소에 있는 문서, 스크립트, 자동화와 `.gitkeep`은 수행을 돕는 구조입니다. **실제로 실행하지 않은 결과를 완료로 표시하지 않습니다.**
+저장소의 문서, 스크립트, 자동화와 `.gitkeep`은 수행을 돕는 구조입니다. **실제로 실행하지 않은 결과를 완료로 표시하지 않습니다.**
 
 ---
 
@@ -30,9 +31,10 @@
 4. [macOS + OrbStack 시작](#4-macos--orbstack-시작)
 5. [VS Code 검증과 증거 수집](#5-vs-code-검증과-증거-수집)
 6. [공통 미션 수행](#6-공통-미션-수행)
-7. [Git·GitHub 제출](#7-gitgithub-제출)
-8. [Clean clone 최종 검증](#8-clean-clone-최종-검증)
-9. [평가 전 체크리스트](#9-평가-전-체크리스트)
+7. [Codex 작업 지시](#7-codex-작업-지시)
+8. [Git·GitHub 제출](#8-gitgithub-제출)
+9. [Clean clone 최종 검증](#9-clean-clone-최종-검증)
+10. [평가 전 체크리스트](#10-평가-전-체크리스트)
 
 ---
 
@@ -58,7 +60,7 @@ macOS에서 수행   → Windows·WSL 항목: 해당 없음
 
 # 2. 문서와 저장소 구조
 
-## 주요 문서
+## 사람·평가자용 문서
 
 - [저장소 보완 점검](docs/repository-audit.md)
 - [저장소 구조](docs/repository-structure.md)
@@ -74,38 +76,40 @@ macOS에서 수행   → Windows·WSL 항목: 해당 없음
 - [로그 작성 규칙](docs/logs/README.md)
 - [스크린샷 규칙](docs/screenshots/README.md)
 
+## Codex 작업 문서
+
+- [저장소 전체 Codex 규칙](AGENTS.md)
+- [Codex 작업 운영 가이드](docs/codex/README.md)
+- [작업 명세 템플릿](docs/codex/TASK_TEMPLATE.md)
+- [공통 수용 기준](docs/codex/ACCEPTANCE_CRITERIA.md)
+- [변경 보고 템플릿](docs/codex/CHANGE_REPORT_TEMPLATE.md)
+- [작업 명세 디렉터리 안내](docs/codex/tasks/README.md)
+
+변경 대상이 `docs/`, `scripts/`, `.github/` 아래라면 해당 디렉터리의 `AGENTS.md`도 함께 적용합니다.
+
 ## 핵심 구조
 
 ```text
 codyssey-training-e1-1/
+├── AGENTS.md
 ├── README.md
 ├── Dockerfile
-├── .github/workflows/validate.yml
+├── .github/
+│   ├── AGENTS.md
+│   └── workflows/validate.yml
 ├── .vscode/
 ├── scripts/
+│   ├── AGENTS.md
 │   ├── ci/
-│   │   ├── check-dockerfile.sh
-│   │   ├── check-markdown-links.py
-│   │   └── check-powershell-syntax.ps1
 │   ├── macos/
 │   ├── windows/
-│   │   ├── setup-wsl.ps1
-│   │   ├── open-vscode-wsl.ps1
-│   │   └── collect-wsl-host-evidence.ps1
 │   └── ubuntu/
-│       ├── lib/redact.sh
-│       ├── verify-remote-workspace.sh
-│       ├── verify-wsl-workspace.sh
-│       ├── select-port.sh
-│       ├── collect-environment.sh
-│       ├── collect-terminal-permissions.sh
-│       ├── collect-docker-evidence.sh
-│       ├── collect-evidence.sh
-│       └── validate-repository.sh
 ├── site/index.html
 ├── bind-test/index.html
 ├── practice/
 └── docs/
+    ├── AGENTS.md
+    ├── codex/
     ├── logs/
     └── screenshots/
 ```
@@ -299,7 +303,7 @@ Ctrl/Command + Shift + P
 | `E1-1: Collect Docker Evidence` | Docker·hello-world 로그 생성 |
 | `E1-1: Collect All Basic Evidence` | 모든 기본 로그 순차 생성 |
 | `E1-1: Collect Evidence Without Docker` | Docker 제외 기본 로그 생성 |
-| `E1-1: Validate Repository` | 구조·문법·링크·Dockerfile 검증 |
+| `E1-1: Validate Repository` | 구조·문법·링크·Dockerfile·Codex 지시 계층 검증 |
 
 ## 5.2 Windows 호스트 로그
 
@@ -501,7 +505,63 @@ curl -fsS "http://localhost:${HOST_PORT}"
 
 ---
 
-# 7. Git·GitHub 제출
+# 7. Codex 작업 지시
+
+## 7.1 기본 원칙
+
+Codex에 저장소 작업을 맡길 때 README 전체를 단독 지시문으로 사용하지 않습니다. 루트 [AGENTS.md](AGENTS.md)를 전체 작업 계약으로 사용하고, 작업별 요구사항은 `docs/codex/tasks/`에 작성합니다.
+
+다음 경계를 유지합니다.
+
+- Codex가 할 수 있는 일: 문서·스크립트·CI 수정, 정적 검증, 사용 가능한 환경에서 Docker build와 smoke test
+- 실제 사용자 장비에서 해야 하는 일: Windows/WSL 또는 macOS/OrbStack 로그, 스크린샷, 실제 트러블슈팅과 최종 개인 장비 검증
+- Codex는 실제 장비 증거를 생성하거나 `docs/evidence-index.md`를 근거 없이 완료 처리하지 않음
+
+## 7.2 작업 명세 작성
+
+```bash
+cp \
+  docs/codex/TASK_TEMPLATE.md \
+  docs/codex/tasks/<작업명>.md
+```
+
+명세에는 다음을 작성합니다.
+
+- 목적과 현재 문제
+- 허용 범위와 금지 범위
+- 필수 요구사항
+- 수용 기준
+- 실행할 검증
+- 실제 장비에서만 가능한 항목
+- 완료 보고 형식
+
+## 7.3 Codex 지시 예시
+
+```text
+루트 AGENTS.md와 docs/codex/tasks/<작업명>.md를 먼저 읽으세요.
+변경 대상에 적용되는 하위 AGENTS.md를 모두 준수하세요.
+허용 범위 안에서 작업하고 검증 명령을 실제로 실행하세요.
+실행하지 못한 검증과 실제 장비에서 남은 작업을 숨기지 말고,
+docs/codex/CHANGE_REPORT_TEMPLATE.md 형식으로 결과를 보고하세요.
+```
+
+## 7.4 Codex 작업 완료 기준
+
+공통 기준은 [Codex 공통 수용 기준](docs/codex/ACCEPTANCE_CRITERIA.md)을 따릅니다.
+
+최소 검증:
+
+```bash
+bash scripts/ubuntu/validate-repository.sh
+```
+
+변경 영향에 따라 ShellCheck, PowerShell 검사, Docker build와 HTTP smoke test를 추가합니다. 실행하지 않은 검증은 성공으로 표현하지 않습니다.
+
+Codex 작업 완료와 E1-1 개인 장비 미션 완료는 별개입니다.
+
+---
+
+# 8. Git·GitHub 제출
 
 GitHub CLI는 선택 사항입니다. `git clone`, `git push`와 GitHub 웹으로도 수행할 수 있습니다.
 
@@ -518,7 +578,8 @@ git status -sb
 git diff
 
 git add \
-  README.md Dockerfile .dockerignore .gitignore .gitattributes \
+  AGENTS.md README.md Dockerfile \
+  .dockerignore .gitignore .gitattributes \
   .github/ .vscode/ scripts/ site/ bind-test/ practice/ docs/
 
 git diff --cached
@@ -530,7 +591,7 @@ git push -u origin feat/e1-1-workstation
 
 ---
 
-# 8. Clean clone 최종 검증
+# 9. Clean clone 최종 검증
 
 ```bash
 RETEST_DIR="$HOME/codyssey-retest/e1-1-$(date +%Y%m%d-%H%M%S)"
@@ -562,7 +623,8 @@ GitHub Actions의 `Validate E1-1 Repository` workflow는 다음을 검사합니�
 
 - Ubuntu 24.04 runner
 - checkout Action의 전체 commit SHA 고정
-- 필수 파일, 셸·JSON과 Markdown 상대 링크
+- 필수 파일과 Codex 지시 계층
+- 셸·JSON과 Markdown 상대 링크
 - ShellCheck
 - PowerShell parser와 PSScriptAnalyzer
 - Dockerfile 태그·digest 고정
@@ -572,7 +634,7 @@ GitHub Actions의 `Validate E1-1 Repository` workflow는 다음을 검사합니�
 
 ---
 
-# 9. 평가 전 체크리스트
+# 10. 평가 전 체크리스트
 
 ## 환경
 
@@ -606,4 +668,12 @@ GitHub Actions의 `Validate E1-1 Repository` workflow는 다음을 검사합니�
 - [ ] `docs/evidence-index.md` 상태가 실제 결과와 일치
 - [ ] 민감정보 미포함
 
-현재 저장소는 **수행 구조와 검증 자동화가 준비된 상태**입니다. 최종 완료 여부는 실제 장비에서 생성한 로그, 스크린샷, 트러블슈팅과 clean clone 결과로 판단합니다.
+## Codex 운영
+
+- [ ] 루트 `AGENTS.md`와 적용되는 하위 `AGENTS.md` 확인
+- [ ] 작업별 명세를 `docs/codex/tasks/`에 작성
+- [ ] 허용·금지 범위와 수용 기준 명시
+- [ ] 실제 실행한 검증과 미실행 검증을 구분해 보고
+- [ ] Codex 작업 완료와 개인 장비 미션 완료를 구분
+
+현재 저장소는 **수행 구조, Codex 지시 계층과 검증 자동화가 준비된 상태**입니다. E1-1 최종 완료 여부는 실제 장비에서 생성한 로그, 스크린샷, 트러블슈팅과 clean clone 결과로 판단합니다.
