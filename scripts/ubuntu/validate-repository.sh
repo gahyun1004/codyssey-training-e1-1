@@ -87,7 +87,7 @@ fi
 
 grep -q 'Codyssey E1-1' site/index.html
 
-if git grep -n -E 'https?://[^/@[:space:]]+@' -- ':!docs/troubleshooting.md'; then
+if git grep -n -E 'https?://[^/@[:space:]]+@' -- .; then
   echo '[FAIL] credential-like URL found in tracked files.' >&2
   exit 1
 fi
