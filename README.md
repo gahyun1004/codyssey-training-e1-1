@@ -38,7 +38,7 @@
 8. [프로젝트별 VS Code 터미널 설정](#8-프로젝트별-vs-code-터미널-설정)
 9. [저장소 기본 구조와 환경 기록](#9-저장소-기본-구조와-환경-기록)
 10. [터미널과 권한 실습](#10-터미널과-권한-실습)
-11. [Docker 기본 운영과 attachexec](#11-docker-기본-운영과-attachexec)
+11. [Docker 기본 운영과 attach·exec](#11-docker-기본-운영과-attachexec)
 12. [Dockerfile 웹 서버 제작](#12-dockerfile-웹-서버-제작)
 13. [포트 매핑 검증](#13-포트-매핑-검증)
 14. [바인드 마운트 검증](#14-바인드-마운트-검증)
@@ -468,7 +468,7 @@ REMOTE_DIR=/home/사용자이름/codyssey-training/codyssey-training-e1-1
   "$REMOTE_DIR"
 ```
 
-사용자가 요청한 기본 형식은 다음과 같습니다.
+기본 형식:
 
 ```bash
 code --remote \
@@ -558,7 +558,25 @@ VS Code가 열린 뒤 확인합니다.
 
 ## 8.2 새 터미널 검증
 
-기존 터미널을 닫고 다음 메뉴로 새 터미널을 엽니다.
+먼저 Mac에서 Terminal 앱을 실행합니다.
+
+```text
+Command(⌘) + Space
+→ Spotlight 검색창에 Terminal 입력
+→ Return 또는 Terminal 앱 선택
+```
+
+열린 Mac Terminal에서 다음 명령으로 OrbStack Ubuntu의 현재 저장소를 VS Code Remote-SSH 창으로 엽니다.
+
+```bash
+code --new-window \
+  --remote "ssh-remote+codyssey-training@orb" \
+  "$(ssh codyssey-training@orb 'cd ~/codyssey-training/codyssey-training-e1-1 && pwd -P')"
+```
+
+`code: command not found`가 나오면 [7.2 Mac의 `code` CLI 확인](#72-mac의-code-cli-확인) 절차를 먼저 수행합니다.
+
+VS Code 왼쪽 아래에 `SSH: codyssey-training@orb`가 표시되는지 확인합니다. 이후 기존 통합 터미널을 모두 닫고 다음 메뉴로 새 터미널을 엽니다.
 
 ```text
 Terminal → New Terminal
@@ -1147,6 +1165,7 @@ git branch --show-current
 
 - [ ] Ubuntu 24.04 머신을 생성·확인했다.
 - [ ] `ssh codyssey-training@orb` 접속에 성공했다.
+- [ ] Mac에서 `Command(⌘) + Space`로 Spotlight를 열고 Terminal을 실행했다.
 - [ ] Mac에서 `code --remote`로 Ubuntu 저장소 절대 경로를 열었다.
 - [ ] VS Code 왼쪽 아래에 SSH 원격 호스트가 표시된다.
 - [ ] `.vscode/settings.json`이 저장소에 있다.
