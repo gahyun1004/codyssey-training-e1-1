@@ -11,7 +11,6 @@ warn() {
 }
 
 test -r /etc/os-release || fail '/etc/os-release를 읽을 수 없습니다.'
-# shellcheck disable=SC1091
 source /etc/os-release
 
 PROCESS_NAME="$(ps -p $$ -o comm= | xargs)"
@@ -31,13 +30,11 @@ printf 'GIT_ROOT=%s\n' "${GIT_ROOT:-not-a-git-repository}"
 printf 'BRANCH=%s\n' "$(git branch --show-current 2>/dev/null || true)"
 
 test "${VERSION_ID:-}" = '24.04' || fail 'Ubuntu 24.04가 아닙니다.'
-printf '%s\n' "$KERNEL_RELEASE" | grep -qiE 'microsoft|wsl' ||
-  fail 'WSL 커널로 확인되지 않습니다.'
+printf '%s\n' "$KERNEL_RELEASE" | grep -qiE 'microsoft|wsl' || fail 'WSL 커널로 확인되지 않습니다.'
 test -n "$DISTRO_NAME" || fail 'WSL_DISTRO_NAME이 설정되지 않았습니다.'
 test "$PROCESS_NAME" = 'bash' || fail '현재 셸 프로세스가 bash가 아닙니다.'
 test -n "$GIT_ROOT" || fail '현재 폴더가 Git 저장소가 아닙니다.'
-test "$CURRENT_DIR" = "$GIT_ROOT" ||
-  fail '현재 폴더와 Git 저장소 루트가 다릅니다.'
+test "$CURRENT_DIR" = "$GIT_ROOT" || fail '현재 폴더와 Git 저장소 루트가 다릅니다.'
 
 case "$CURRENT_DIR" in
   /mnt/*)

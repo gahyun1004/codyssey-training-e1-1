@@ -15,6 +15,21 @@
         "clear": true,
         "focus": true
       }
+    },
+    {
+      "label": "E1-1: Verify WSL Ubuntu Workspace",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/ubuntu/verify-wsl-workspace.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true,
+        "focus": true
+      }
     }
   ]
 }
