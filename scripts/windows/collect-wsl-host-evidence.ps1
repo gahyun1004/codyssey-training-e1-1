@@ -47,21 +47,13 @@ if (-not (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-$linuxRepository = (
-    wsl.exe --distribution $Distribution -- bash -lc \
-        "cd ~/$RepositoryPath && pwd -P" 2>$null |
-        Out-String
-).Trim()
+$linuxRepository = (wsl.exe --distribution $Distribution -- bash -lc "cd ~/$RepositoryPath && pwd -P" 2>$null | Out-String).Trim()
 if (-not $linuxRepository) {
     Write-Error "WSL 저장소를 찾지 못했습니다: ~/$RepositoryPath"
     exit 1
 }
 
-$windowsRepository = (
-    wsl.exe --distribution $Distribution -- wslpath -w \
-        $linuxRepository 2>$null |
-        Out-String
-).Trim()
+$windowsRepository = (wsl.exe --distribution $Distribution -- wslpath -w $linuxRepository 2>$null | Out-String).Trim()
 if (-not $windowsRepository) {
     Write-Error "WSL 저장소의 Windows 경로를 확인하지 못했습니다."
     exit 1
