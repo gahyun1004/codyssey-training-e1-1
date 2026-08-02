@@ -21,10 +21,14 @@
 - Windows 11 Pro:
 - WSL 버전:
 - 배포판: `Ubuntu-24.04`
+- 배포판 설치 루트: `C:\WSL`
+- 배포판 최종 설치 위치: `C:\WSL\Ubuntu-24.04`
+- `Test-Path "C:\WSL\Ubuntu-24.04"` 결과:
+- `--location` 지원 확인:
 - WSL mode: `2`
 - Remote-WSL:
 - bash:
-- workspace 경로:
+- 프로젝트 workspace 경로: `/home/<사용자>/codyssey-training/codyssey-training-e1-1`
 - Docker Desktop WSL Integration:
 - 해당 없음 여부:
 
