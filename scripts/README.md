@@ -2,6 +2,19 @@
 
 운영체제와 실행 위치에 따라 스크립트를 구분합니다. 스크립트는 절차와 로그 생성을 보조하지만 실제 수행 화면과 관찰 결과를 대신하지 않습니다.
 
+## Codex 수정 규칙
+
+Codex 또는 자동화 에이전트가 `scripts/` 아래 파일을 수정할 때는 루트 [`../AGENTS.md`](../AGENTS.md)와 [`AGENTS.md`](AGENTS.md)를 함께 따릅니다.
+
+핵심 원칙:
+
+- Windows·macOS·공통 Ubuntu 로직을 올바른 디렉터리에 유지
+- 필수 검증 실패를 성공으로 처리하지 않음
+- 증거 로그 자동 마스킹 유지
+- 파괴적 WSL·Docker 정리 명령 추가 금지
+- Bash 문법·ShellCheck와 PowerShell parser·PSScriptAnalyzer 통과
+- 스크립트 추가·이동 시 이 문서, 저장소 구조와 검증 목록 동기화
+
 ## 실행 정책
 
 저장소의 셸 스크립트는 다음 형식으로 실행합니다.
@@ -97,7 +110,7 @@ bash scripts/ubuntu/collect-evidence.sh --docker-only
 
 ## 저장소·CI 검증
 
-- `ubuntu/validate-repository.sh`: 필수 파일, 셸·JSON·PowerShell 문법, Markdown 상대 링크, Dockerfile 고정 상태와 기본 비밀 패턴 검증
+- `ubuntu/validate-repository.sh`: 필수 파일, Codex 지시 계층, 셸·JSON·PowerShell 문법, Markdown 상대 링크, Dockerfile 고정 상태와 기본 비밀 패턴 검증
 - `ci/check-markdown-links.py`: Markdown 상대 링크 검사
 - `ci/check-powershell-syntax.ps1`: PowerShell parser 기반 문법 검사
 - `ci/check-dockerfile.sh`: NGINX 태그·digest와 필수 Dockerfile 항목 검사
