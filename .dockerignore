@@ -1,0 +1,10 @@
+.git
+.github
+.vscode
+docs
+practice
+bind-test
+scripts
+.env
+.env.local
+.DS_Store

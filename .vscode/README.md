@@ -4,6 +4,6 @@
 
 - `settings.json`: Ubuntu bash, workspace cwd, split terminal cwd, shell integration
 - `extensions.json`: Remote - SSH 확장 추천
-- `tasks.json`: Ubuntu 버전·bash·workspace 경로·Git root 검증
+- `tasks.json`: `scripts/ubuntu/verify-remote-workspace.sh`를 실행해 Ubuntu 버전·bash·workspace 경로·Git root를 검증
 
 이 설정은 Remote-SSH 연결이 완료된 뒤 적용됩니다. SSH 연결 자체는 Mac의 `code --remote` 명령 또는 `scripts/open-vscode-remote.sh`가 담당합니다.
