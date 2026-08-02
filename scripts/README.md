@@ -15,9 +15,10 @@
 기본 설치 값:
 
 ```text
-Distribution = Ubuntu-24.04
-InstallRoot  = C:\WSL
-InstallPath  = C:\WSL\Ubuntu-24.04
+Distribution          = Ubuntu-24.04
+InstallRoot           = C:\WSL
+InstallDirectoryName  = codyssey-ubuntu24
+InstallPath           = C:\WSL\codyssey-ubuntu24
 ```
 
 PowerShell 스크립트 실행 예시:
@@ -28,12 +29,13 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\windows\open-vscode-wsl.ps1
 ```
 
-다른 설치 루트 지정:
+다른 설치 루트 또는 디렉터리 이름을 지정하려면:
 
 ```powershell
 .\scripts\windows\setup-wsl.ps1 `
   -Distribution "Ubuntu-24.04" `
-  -InstallRoot "D:\WSL"
+  -InstallRoot "D:\WSL" `
+  -InstallDirectoryName "codyssey-ubuntu24"
 ```
 
 `setup-wsl.ps1`은 기존 배포판을 자동으로 unregister하거나 이동하지 않습니다. 이미 설치된 배포판의 위치를 변경해야 하는 경우에는 별도 백업·export·import 절차를 사용합니다.
