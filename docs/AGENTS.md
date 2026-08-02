@@ -1,53 +1,53 @@
-# Documentation instructions
+# 문서 작업 지침
 
-These rules apply to `docs/` and its descendants, in addition to the root `AGENTS.md`.
+이 규칙은 루트 `AGENTS.md`에 추가하여 `docs/`와 그 하위 경로에 적용합니다.
 
-## Documentation integrity
+## 문서 무결성
 
-- Describe only behavior supported by the repository or by verified execution results.
-- Do not fill blank result fields with plausible values.
-- Label examples, placeholders, and expected output clearly.
-- Do not infer a platform, version, date, path, port, commit SHA, or success state from a template.
-- Keep `docs/evidence-index.md` synchronized with real evidence only.
-- A file path listed in documentation is not proof that the file exists or contains valid evidence.
+- 저장소가 실제로 지원하는 동작이나 검증된 실행 결과만 설명합니다.
+- 빈 결과 필드를 그럴듯한 값으로 채우지 않습니다.
+- 예시, placeholder와 예상 출력은 명확하게 구분해 표시합니다.
+- 템플릿만 보고 플랫폼, 버전, 날짜, 경로, 포트, commit SHA 또는 성공 상태를 추정하지 않습니다.
+- `docs/evidence-index.md`는 실제 증거와 일치하는 경우에만 갱신합니다.
+- 문서에 파일 경로가 적혀 있다는 사실만으로 해당 파일이 존재하거나 유효한 증거를 포함한다고 판단하지 않습니다.
 
-## Evidence files
+## 증거 파일
 
-- Treat files under `docs/logs/` and `docs/screenshots/` as user evidence.
-- Do not fabricate, reconstruct, or visually imitate evidence.
-- Do not replace a real failure log with a clean example.
-- Preserve errors that are relevant to `docs/troubleshooting.md`.
-- Redact credentials and unnecessary personal information without changing the technical meaning.
-- Do not mark CI output as Windows/WSL or macOS/OrbStack personal-device evidence.
+- `docs/logs/`와 `docs/screenshots/` 아래의 파일은 사용자 증거로 취급합니다.
+- 증거를 조작·재구성하거나 실제처럼 보이도록 모방하지 않습니다.
+- 실제 실패 로그를 깨끗한 예시 출력으로 교체하지 않습니다.
+- `docs/troubleshooting.md`와 관련된 오류는 보존합니다.
+- 기술적 의미를 바꾸지 않는 범위에서 credential과 불필요한 개인정보를 마스킹합니다.
+- CI 출력을 Windows/WSL 또는 macOS/OrbStack 개인 장비 증거로 표시하지 않습니다.
 
-## Structure and links
+## 구조와 링크
 
-- Use relative links for repository files.
-- Update `docs/repository-structure.md` when files are added, moved, or removed.
-- Update `docs/repository-audit.md` when a repository-level control is added or retired.
-- Avoid copying full procedures into multiple documents. Keep `README.md` as the central workflow and platform guides as detailed references.
-- Run the repository Markdown link checker after changing links or headings.
+- 저장소 파일을 연결할 때 상대 링크를 사용합니다.
+- 파일이 추가·이동·삭제되면 `docs/repository-structure.md`를 갱신합니다.
+- 저장소 수준의 통제가 추가되거나 제거되면 `docs/repository-audit.md`를 갱신합니다.
+- 전체 절차를 여러 문서에 그대로 복제하지 않습니다. `README.md`는 중앙 수행 흐름, 플랫폼 가이드는 상세 참고자료로 유지합니다.
+- 링크나 heading을 변경한 뒤에는 저장소의 Markdown 링크 검사를 실행합니다.
 
-## Status language
+## 상태 표기
 
-Use these evidence states consistently:
+증거 상태는 다음 표현을 일관되게 사용합니다.
 
-- `미완료`: required evidence or result is not available
-- `진행 중`: work has started, but acceptance criteria are not met
-- `완료`: evidence exists, was checked, and supports the result
-- `해당 없음`: the item does not apply to the selected execution platform
+- `미완료`: 필요한 증거나 결과가 아직 없음
+- `진행 중`: 작업은 시작했지만 수용 기준을 충족하지 못함
+- `완료`: 증거가 존재하고 검토되었으며 결과를 뒷받침함
+- `해당 없음`: 선택한 실행 플랫폼에 적용되지 않음
 
-Do not use `완료` for templates, scripts, planned procedures, or unverified files.
+템플릿, 스크립트, 예정 절차 또는 검증되지 않은 파일에는 `완료`를 사용하지 않습니다.
 
-## Codex task documents
+## Codex 작업 문서
 
-Files under `docs/codex/tasks/` are work specifications, not evidence. They must state:
+`docs/codex/tasks/` 아래의 파일은 작업 명세이며 증거가 아닙니다. 작업 명세에는 다음 내용을 포함합니다.
 
-- the objective
-- scope boundaries
-- acceptance criteria
-- validation requirements
-- personal-device-only steps
-- reporting format
+- 목적
+- 작업 범위와 경계
+- 수용 기준
+- 검증 요구사항
+- 개인 장비에서만 가능한 단계
+- 보고 형식
 
-Archive or update obsolete task instructions rather than leaving conflicting active specifications.
+서로 충돌하는 활성 작업 명세를 남기지 않도록 오래된 지시는 갱신하거나 보관 상태를 명확히 표시합니다.
