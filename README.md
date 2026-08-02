@@ -5,26 +5,11 @@
 > **대상 저장소:** `gahyun1004/codyssey-training-e1-1`  
 > **작업 브랜치:** `feat/e1-1-workstation`
 
-이 README는 [`E1-1-training.md`](E1-1-training.md)의 초보자 수행 가이드를 기준으로 구성했습니다. 입문자가 위에서부터 한 단계씩 실행하면서 E1-1 미션을 완료할 수 있도록 각 단계를 **실행 위치 → 명령 → 정상 기준 → 오류 대응 → 증거 기록** 순서로 안내합니다.
+[미션 요구사항 README로 돌아가기](README.md)
+
+이 문서는 입문자가 위에서부터 한 단계씩 실행하면서 E1-1 미션을 완료하도록 구성한 실습 가이드입니다. 각 단계는 **실행 위치 → 명령 → 정상 기준 → 오류 대응 → 증거 기록** 순서로 진행합니다.
 
 > 컴퓨터마다 설치 상태가 다르므로 오류가 전혀 없다고 단정할 수는 없습니다. 오류가 발생하면 다음 단계로 넘어가지 말고, 오류 메시지 원문과 해결 과정을 `docs/troubleshooting.md`에 기록합니다.
-
----
-
-## 수행 문서
-
-- [원본 단계별 수행 가이드](E1-1-training.md)
-- [실행 환경](docs/environment.md)
-- [터미널 및 권한 실습](docs/terminal-and-permissions.md)
-- [Docker 운영](docs/docker-operations.md)
-- [커스텀 이미지 설계](docs/image-design.md)
-- [포트 매핑 및 바인드 마운트](docs/port-and-bind.md)
-- [볼륨 영속성](docs/volume-persistence.md)
-- [최종 검증 결과](docs/test-results.md)
-- [트러블슈팅](docs/troubleshooting.md)
-- [스크린샷 증거](docs/screenshots/)
-
-> 위 문서와 폴더는 실제 미션을 수행하면서 명령어, 출력 결과, 설명, 스크린샷으로 채웁니다.
 
 ---
 
@@ -694,7 +679,21 @@ do
 done
 ```
 
-README 상단의 **수행 문서** 영역에 각 증거 문서 링크가 유지되는지 확인합니다.
+README의 상단 또는 목차 아래에 다음 링크 영역이 있는지 확인합니다. 없다면 추가합니다.
+
+```markdown
+## 수행 문서
+
+- [초보자 수행 가이드](E1-1-training.md)
+- [실행 환경](docs/environment.md)
+- [터미널 및 권한 실습](docs/terminal-and-permissions.md)
+- [Docker 운영](docs/docker-operations.md)
+- [커스텀 이미지 설계](docs/image-design.md)
+- [포트 매핑 및 바인드 마운트](docs/port-and-bind.md)
+- [볼륨 영속성](docs/volume-persistence.md)
+- [최종 검증 결과](docs/test-results.md)
+- [트러블슈팅](docs/troubleshooting.md)
+```
 
 ---
 
