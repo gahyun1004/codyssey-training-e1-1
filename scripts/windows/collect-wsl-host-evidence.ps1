@@ -48,8 +48,8 @@ if (-not (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
 }
 
 $linuxRepository = (
-    wsl.exe --distribution $Distribution -- \
-        bash -lc "cd ~/$RepositoryPath && pwd -P" 2>$null |
+    wsl.exe --distribution $Distribution -- bash -lc \
+        "cd ~/$RepositoryPath && pwd -P" 2>$null |
         Out-String
 ).Trim()
 if (-not $linuxRepository) {
@@ -58,8 +58,8 @@ if (-not $linuxRepository) {
 }
 
 $windowsRepository = (
-    wsl.exe --distribution $Distribution -- \
-        wslpath -w $linuxRepository 2>$null |
+    wsl.exe --distribution $Distribution -- wslpath -w \
+        $linuxRepository 2>$null |
         Out-String
 ).Trim()
 if (-not $windowsRepository) {
