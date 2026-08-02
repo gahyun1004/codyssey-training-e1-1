@@ -10,6 +10,7 @@ required_files=(
   .dockerignore
   .gitignore
   .gitattributes
+  .github/workflows/validate.yml
   .vscode/settings.json
   .vscode/extensions.json
   .vscode/tasks.json
@@ -17,11 +18,13 @@ required_files=(
   scripts/ubuntu/verify-wsl-workspace.sh
   scripts/ubuntu/select-port.sh
   scripts/ubuntu/collect-evidence.sh
+  scripts/ubuntu/validate-repository.sh
   scripts/windows/setup-wsl.ps1
   scripts/windows/open-vscode-wsl.ps1
   scripts/windows/collect-wsl-host-evidence.ps1
   site/index.html
   bind-test/index.html
+  docs/repository-audit.md
   docs/evidence-index.md
   docs/repository-structure.md
   docs/environment.md
@@ -47,7 +50,13 @@ while IFS= read -r -d '' script; do
   bash -n "$script"
 done < <(find scripts -type f -name '*.sh' -print0)
 
-for script in scripts/open-vscode-remote.sh scripts/macos/open-vscode-remote.sh scripts/ubuntu/*.sh; do
+# Directly executed entry points must retain the executable bit.
+for script in \
+  scripts/open-vscode-remote.sh \
+  scripts/macos/open-vscode-remote.sh \
+  scripts/ubuntu/verify-remote-workspace.sh \
+  scripts/ubuntu/verify-wsl-workspace.sh \
+  scripts/ubuntu/select-port.sh; do
   if [[ ! -x "$script" ]]; then
     printf '[FAIL] executable bit missing: %s\n' "$script" >&2
     exit 1
@@ -74,7 +83,7 @@ else
   exit 1
 fi
 
-grep -q '^FROM nginx:' Dockerfile
+grep -q '^FROM nginx:1\.30\.4-alpine3\.24$' Dockerfile
 grep -q 'COPY site/' Dockerfile
 grep -q 'Codyssey E1-1' site/index.html
 
