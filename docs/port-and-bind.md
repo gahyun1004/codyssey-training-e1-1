@@ -5,7 +5,7 @@
 ## 1. 사용 가능한 포트 선택
 
 ```bash
-HOST_PORT="$(scripts/ubuntu/select-port.sh)"
+HOST_PORT="$(bash scripts/ubuntu/select-port.sh)"
 printf 'HOST_PORT=%s\n' "$HOST_PORT"
 printf 'HOST_PORT=%s\n' "$HOST_PORT" > .env.local
 ```
@@ -61,7 +61,7 @@ docker run -d \
   --name e1-1-bind \
   -p "127.0.0.1:${HOST_PORT}:80" \
   -v "$PWD/bind-test:/usr/share/nginx/html:ro" \
-  nginx:1.30.4-alpine3.24
+  nginx:1.30.4-alpine3.24@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46
 
 curl -fsS "http://localhost:${HOST_PORT}"
 ```
