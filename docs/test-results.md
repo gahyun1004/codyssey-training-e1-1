@@ -21,9 +21,10 @@
 - Windows 11 Pro:
 - WSL 버전:
 - 배포판: `Ubuntu-24.04`
-- 배포판 설치 루트: `C:\WSL`
-- 배포판 최종 설치 위치: `C:\WSL\Ubuntu-24.04`
-- `Test-Path "C:\WSL\Ubuntu-24.04"` 결과:
+- WSL 설치 루트: `C:\WSL`
+- 설치 디렉터리 이름: `codyssey-ubuntu24`
+- 배포판 최종 설치 위치: `C:\WSL\codyssey-ubuntu24`
+- `Test-Path "C:\WSL\codyssey-ubuntu24"` 결과:
 - `--location` 지원 확인:
 - WSL mode: `2`
 - Remote-WSL:
