@@ -20,4 +20,13 @@ test "$PROCESS_NAME" = "bash"
 test "$PWD" = "$GIT_ROOT"
 test -n "$BRANCH_NAME"
 
-echo "[PASS] Ubuntu 24.04, bash, workspace folder and Git root verified."
+if ! command -v docker >/dev/null 2>&1; then
+  echo '[FAIL] docker command not found.' >&2
+  exit 1
+fi
+
+printf 'DOCKER_CLIENT=%s\n' "$(docker --version)"
+docker version >/dev/null
+docker info >/dev/null
+
+echo "[PASS] Ubuntu 24.04, bash, workspace, Git root and Docker connection verified."
