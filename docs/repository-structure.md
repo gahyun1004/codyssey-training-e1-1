@@ -1,15 +1,17 @@
 # 저장소 구조
 
-README의 운영체제별 수행 경로와 실제 저장소 구조를 정리합니다.
+README의 운영체제별 수행 경로, Codex 지시 계층과 실제 저장소 구조를 정리합니다.
 
 ```text
 codyssey-training-e1-1/
+├── AGENTS.md
 ├── README.md
 ├── Dockerfile
 ├── .dockerignore
 ├── .gitignore
 ├── .gitattributes
 ├── .github/
+│   ├── AGENTS.md
 │   └── workflows/
 │       └── validate.yml
 ├── .vscode/
@@ -18,6 +20,7 @@ codyssey-training-e1-1/
 │   ├── extensions.json
 │   └── tasks.json
 ├── scripts/
+│   ├── AGENTS.md
 │   ├── README.md
 │   ├── open-vscode-remote.sh
 │   ├── ci/
@@ -52,6 +55,14 @@ codyssey-training-e1-1/
 │       ├── .gitkeep
 │       └── permission-dir/.gitkeep
 └── docs/
+    ├── AGENTS.md
+    ├── codex/
+    │   ├── README.md
+    │   ├── TASK_TEMPLATE.md
+    │   ├── ACCEPTANCE_CRITERIA.md
+    │   ├── CHANGE_REPORT_TEMPLATE.md
+    │   └── tasks/
+    │       └── README.md
     ├── macos-orbstack-guide.md
     ├── windows-wsl.md
     ├── repository-audit.md
@@ -79,6 +90,22 @@ codyssey-training-e1-1/
         ├── github/.gitkeep
         └── vscode/.gitkeep
 ```
+
+## Codex 지시 계층
+
+| 파일 | 적용 범위 | 역할 |
+|---|---|---|
+| `AGENTS.md` | 저장소 전체 | 목적, 안전, 증거, 변경, 검증과 보고 규칙 |
+| `docs/AGENTS.md` | `docs/` 하위 | 문서·증거 무결성, 상태와 링크 규칙 |
+| `scripts/AGENTS.md` | `scripts/` 하위 | Bash·PowerShell·증거 수집 스크립트 규칙 |
+| `.github/AGENTS.md` | `.github/` 하위 | Workflow 보안, 검증과 PR 규칙 |
+| `docs/codex/README.md` | Codex 운영 문서 | 작업 명세 작성과 실행 흐름 |
+| `docs/codex/TASK_TEMPLATE.md` | 작업 요청자 | 작업별 목적·범위·수용 기준 양식 |
+| `docs/codex/ACCEPTANCE_CRITERIA.md` | 모든 Codex 작업 | 공통 완료 판정 기준 |
+| `docs/codex/CHANGE_REPORT_TEMPLATE.md` | 작업 종료 | 변경·검증·잔여 작업 보고 양식 |
+| `docs/codex/tasks/` | 개별 작업 | 활성 작업별 구체적인 명세 |
+
+작업 전 루트 `AGENTS.md`와 변경 대상 경로에 적용되는 하위 `AGENTS.md`를 함께 확인합니다. 작업 명세는 구현 지시서이며 미션 수행 증거가 아닙니다.
 
 ## 플랫폼별 진입점
 
@@ -127,6 +154,8 @@ GitHub Actions는 Ubuntu 24.04 runner에서 다음 항목을 확인합니다.
 
 ## 구분 원칙
 
+- `AGENTS.md`: Codex가 저장소를 수정할 때 따르는 운영 계약
+- `docs/codex/`: 작업 명세, 수용 기준과 변경 보고 형식
 - `site/`: Docker 이미지에 포함되는 정적 웹 콘텐츠
 - `bind-test/`: 바인드 마운트 변경 전후 확인용 콘텐츠
 - `practice/`: CLI와 권한 실습용 파일
@@ -137,7 +166,9 @@ GitHub Actions는 Ubuntu 24.04 runner에서 다음 항목을 확인합니다.
 
 ## 문서 역할
 
-- `README.md`: 환경 선택, 공통 수행 순서와 최종 체크리스트
+- `README.md`: 사람과 평가자를 위한 환경 선택, 공통 수행 순서와 최종 체크리스트
+- `AGENTS.md`: Codex의 전체 작업 규칙, 금지 사항과 검증 계약
+- `docs/codex/`: Codex 작업 명세와 완료 보고 체계
 - `macos-orbstack-guide.md`: macOS·OrbStack 상세 가이드
 - `windows-wsl.md`: Windows·WSL 상세 가이드
 - `repository-audit.md`: 저장소 보완 사항과 남은 수동 작업

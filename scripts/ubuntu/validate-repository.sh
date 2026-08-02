@@ -5,15 +5,18 @@ ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
 required_files=(
+  AGENTS.md
   README.md
   Dockerfile
   .dockerignore
   .gitignore
   .gitattributes
+  .github/AGENTS.md
   .github/workflows/validate.yml
   .vscode/settings.json
   .vscode/extensions.json
   .vscode/tasks.json
+  scripts/AGENTS.md
   scripts/ci/check-dockerfile.sh
   scripts/ci/check-markdown-links.py
   scripts/ci/check-powershell-syntax.ps1
@@ -31,6 +34,12 @@ required_files=(
   scripts/windows/collect-wsl-host-evidence.ps1
   site/index.html
   bind-test/index.html
+  docs/AGENTS.md
+  docs/codex/README.md
+  docs/codex/TASK_TEMPLATE.md
+  docs/codex/ACCEPTANCE_CRITERIA.md
+  docs/codex/CHANGE_REPORT_TEMPLATE.md
+  docs/codex/tasks/README.md
   docs/repository-audit.md
   docs/evidence-index.md
   docs/repository-structure.md
@@ -86,10 +95,14 @@ else
 fi
 
 grep -q 'Codyssey E1-1' site/index.html
+grep -q '^# Codex repository instructions$' AGENTS.md
+grep -q 'Never invent command output' AGENTS.md
+grep -q '^# Codex 작업 운영 가이드$' docs/codex/README.md
+grep -q '^# Codex 공통 수용 기준$' docs/codex/ACCEPTANCE_CRITERIA.md
 
 if git grep -n -E 'https?://[^/@[:space:]]+@' -- .; then
   echo '[FAIL] credential-like URL found in tracked files.' >&2
   exit 1
 fi
 
-echo '[PASS] repository structure, syntax, links, Dockerfile and basic secret patterns validated.'
+echo '[PASS] repository structure, Codex instructions, syntax, links, Dockerfile and basic secret patterns validated.'
