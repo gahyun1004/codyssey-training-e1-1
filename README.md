@@ -59,20 +59,77 @@
 ```text
 Windows 키
 → Windows Terminal 또는 PowerShell 검색
-→ WSL 최초 설치 단계에서는 관리자 권한으로 실행
+→ WSL 설치 단계에서는 관리자 권한으로 실행
 ```
 
-## 3.2 WSL과 Ubuntu 24.04 설치
+## 3.2 C 드라이브에 WSL 폴더 만들기
+
+이 가이드의 Windows 기본 설치 위치는 다음과 같습니다.
+
+```text
+C:\WSL\Ubuntu-24.04
+```
+
+이 경로는 **Ubuntu 배포판의 가상 디스크와 시스템 파일을 저장하는 위치**입니다. 프로젝트 저장소는 Ubuntu 내부의 `/home/<사용자>/...`에 clone합니다. `C:\WSL\Ubuntu-24.04` 안에 프로젝트 파일을 직접 넣지 않습니다.
+
+먼저 WSL 기능만 설치합니다. WSL이 이미 정상 설치되어 있다면 이 명령은 건너뜁니다.
+
+```powershell
+# [PowerShell 관리자]
+wsl.exe --install --no-distribution
+```
+
+재시작이 요구되면 Windows를 재시작한 후 다시 관리자 PowerShell을 엽니다.
+
+## 3.3 WSL 업데이트와 `--location` 지원 확인
+
+```powershell
+# [PowerShell 관리자]
+wsl.exe --update
+wsl.exe --set-default-version 2
+wsl.exe --version
+wsl.exe --help | Select-String -SimpleMatch "--location"
+```
+
+`--location`이 표시되어야 지정 폴더 설치를 사용할 수 있습니다. 표시되지 않으면 Windows Update와 Microsoft Store 버전 WSL 업데이트를 먼저 완료합니다.
+
+## 3.4 Ubuntu 24.04를 `C:\WSL` 아래에 설치
+
+온라인 배포판 이름을 확인하고 설치 폴더를 만듭니다.
 
 ```powershell
 # [PowerShell 관리자]
 wsl.exe --list --online
-wsl.exe --install -d Ubuntu-24.04
+New-Item -ItemType Directory -Force -Path "C:\WSL"
 ```
 
-재시작이 요구되면 Windows를 재시작합니다. Ubuntu 최초 실행 시 Linux 사용자 이름과 비밀번호를 설정합니다.
+Ubuntu 24.04를 정확한 위치에 설치합니다.
 
 ```powershell
+# [PowerShell 관리자]
+wsl.exe --install `
+  --distribution Ubuntu-24.04 `
+  --location "C:\WSL\Ubuntu-24.04" `
+  --no-launch
+```
+
+설치가 완료되면 기본 배포판으로 지정하고 처음 실행합니다.
+
+```powershell
+wsl.exe --set-default Ubuntu-24.04
+wsl.exe -d Ubuntu-24.04
+```
+
+첫 실행 시 Linux 사용자 이름과 비밀번호를 설정합니다.
+
+> `Ubuntu-24.04`가 이미 다른 위치에 설치되어 있다면 위 명령으로 덮어쓰거나 이동하지 않습니다. 기존 배포판 이동은 export·unregister·import 절차가 필요하며 데이터 손실 위험이 있으므로 별도 작업으로 진행해야 합니다.
+
+## 3.5 설치 위치와 WSL2 확인
+
+```powershell
+# [PowerShell 관리자 또는 일반 PowerShell]
+Test-Path "C:\WSL\Ubuntu-24.04"
+Get-ChildItem -Force "C:\WSL\Ubuntu-24.04"
 wsl.exe --version
 wsl.exe --status
 wsl.exe --list --verbose
@@ -80,10 +137,12 @@ wsl.exe --list --verbose
 
 정상 기준:
 
-- 배포판: `Ubuntu-24.04`
-- `VERSION`: `2`
+- `Test-Path` 결과가 `True`
+- `C:\WSL\Ubuntu-24.04` 폴더가 존재
+- 배포판 이름이 `Ubuntu-24.04`
+- `VERSION`이 `2`
 
-WSL 1이면:
+WSL 1이면 다음을 실행합니다.
 
 ```powershell
 wsl.exe --set-default-version 2
@@ -91,16 +150,34 @@ wsl.exe --set-version Ubuntu-24.04 2
 wsl.exe --set-default Ubuntu-24.04
 ```
 
-Windows에 이 저장소가 clone되어 있을 때 보조 스크립트를 사용할 수 있습니다.
+## 3.6 설치 보조 스크립트
+
+Windows에 이 저장소가 clone되어 있을 때 다음 스크립트를 사용할 수 있습니다.
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\windows\setup-wsl.ps1
 ```
 
-> 스크립트는 설치 상태를 점검하고 명령을 실행합니다. Windows 재부팅과 Ubuntu 최초 사용자 생성은 사용자가 직접 완료합니다.
+기본값:
 
-## 3.3 Ubuntu 24.04 확인
+```text
+배포판: Ubuntu-24.04
+설치 루트: C:\WSL
+최종 위치: C:\WSL\Ubuntu-24.04
+```
+
+다른 설치 루트를 지정하려면:
+
+```powershell
+.\scripts\windows\setup-wsl.ps1 `
+  -Distribution "Ubuntu-24.04" `
+  -InstallRoot "D:\WSL"
+```
+
+스크립트는 관리자 권한, WSL 업데이트, `--location` 지원, 기존 배포판, 대상 폴더 상태를 확인합니다. Windows 재부팅과 Ubuntu 최초 사용자 생성은 사용자가 직접 완료합니다.
+
+## 3.7 Ubuntu 24.04 확인
 
 ```powershell
 # [PowerShell]
@@ -123,7 +200,7 @@ pwd
 - `WSL_DISTRO_NAME=Ubuntu-24.04`
 - `SHELL=/bin/bash`
 
-## 3.4 저장소를 WSL Linux 홈에 clone
+## 3.8 저장소를 WSL Linux 홈에 clone
 
 ```bash
 # [WSL Ubuntu]
@@ -145,18 +222,25 @@ git status -sb
 /home/<WSL사용자>/codyssey-training/codyssey-training-e1-1
 ```
 
-`/mnt/c/...`보다 WSL Linux 홈을 권장합니다.
+경로 구분:
 
-## 3.5 VS Code Remote-WSL 실행
+```text
+Ubuntu 배포판 저장 위치: C:\WSL\Ubuntu-24.04
+프로젝트 작업 위치:     /home/<WSL사용자>/codyssey-training/codyssey-training-e1-1
+```
 
-Windows에서:
+Git·Docker·권한 실습은 `/mnt/c/...`가 아니라 WSL Linux 홈에서 수행합니다.
+
+## 3.9 VS Code Remote-WSL 실행
+
+Windows에서 WSL 확장을 설치합니다.
 
 ```powershell
 # [PowerShell]
 code --install-extension ms-vscode-remote.remote-wsl
 ```
 
-WSL Ubuntu에서:
+WSL Ubuntu에서 저장소를 엽니다.
 
 ```bash
 # [WSL Ubuntu]
@@ -177,7 +261,7 @@ Windows 보조 스크립트:
 - 새 터미널이 bash
 - `pwd`가 WSL Linux 홈의 저장소 경로
 
-## 3.6 WSL 검증 Task
+## 3.10 WSL 검증 Task
 
 ```text
 Ctrl + Shift + P
@@ -273,28 +357,12 @@ bash scripts/open-vscode-remote.sh
 
 # 6. 공통 VS Code 설정
 
-`.vscode/settings.json`:
+`.vscode/settings.json`은 두 Ubuntu 환경에서 다음 동작을 설정합니다.
 
-```json
-{
-  "terminal.integrated.profiles.linux": {
-    "Ubuntu Bash (login)": {
-      "path": "/bin/bash",
-      "args": ["-l"],
-      "icon": "terminal-bash",
-      "overrideName": true
-    }
-  },
-  "terminal.integrated.defaultProfile.linux": "Ubuntu Bash (login)",
-  "terminal.integrated.automationProfile.linux": {
-    "path": "/bin/bash",
-    "args": ["-l"]
-  },
-  "terminal.integrated.cwd": "${workspaceFolder}",
-  "terminal.integrated.splitCwd": "workspaceRoot",
-  "terminal.integrated.shellIntegration.enabled": true
-}
-```
+- 기본 셸: `/bin/bash -l`
+- 시작 폴더: `${workspaceFolder}`
+- 분할 터미널 시작 폴더: workspace root
+- shell integration 활성화
 
 확장 추천:
 
@@ -351,11 +419,6 @@ codyssey-training-e1-1/
 ├── bind-test/
 │   └── index.html
 ├── practice/
-│   ├── README.md
-│   ├── terminal/.gitkeep
-│   └── permissions/
-│       ├── .gitkeep
-│       └── permission-dir/.gitkeep
 └── docs/
     ├── macos-orbstack-guide.md
     ├── windows-wsl.md
@@ -375,9 +438,9 @@ codyssey-training-e1-1/
 
 | 경로 | 역할 |
 |---|---|
-| `docs/macos-orbstack-guide.md` | 기존 macOS·OrbStack 전체 가이드 |
+| `docs/macos-orbstack-guide.md` | macOS·OrbStack 전체 가이드 |
 | `docs/windows-wsl.md` | Windows·WSL 전체 가이드 |
-| `scripts/windows/setup-wsl.ps1` | WSL2·Ubuntu 24.04 상태 점검 |
+| `scripts/windows/setup-wsl.ps1` | `C:\WSL\Ubuntu-24.04` 기본 설치와 상태 점검 |
 | `scripts/windows/open-vscode-wsl.ps1` | WSL 저장소에서 `code .` 실행 |
 | `scripts/ubuntu/verify-wsl-workspace.sh` | WSL·Ubuntu·bash·workspace·Docker 검증 |
 | `.gitattributes` | Windows와 Linux 줄바꿈 정책 고정 |
@@ -482,6 +545,19 @@ docker exec e1-1-volume-2 cat /data/result.txt
 
 # 9. 환경과 증거 기록
 
+Windows 호스트:
+
+```powershell
+Get-ComputerInfo |
+  Select-Object WindowsProductName, WindowsVersion, OsBuildNumber
+
+Test-Path "C:\WSL\Ubuntu-24.04"
+Get-ChildItem -Force "C:\WSL\Ubuntu-24.04"
+wsl.exe --version
+wsl.exe --status
+wsl.exe --list --verbose
+```
+
 Ubuntu 로그:
 
 ```bash
@@ -507,18 +583,11 @@ mkdir -p docs/logs
 } 2>&1 | tee docs/logs/environment.txt
 ```
 
-Windows 호스트:
-
-```powershell
-wsl.exe --version
-wsl.exe --status
-wsl.exe --list --verbose
-code --version
-```
-
 필수 증거:
 
-- 선택한 호스트 OS와 Ubuntu 24.04
+- Windows 11 Pro 정보
+- `C:\WSL\Ubuntu-24.04` 폴더 존재
+- `wsl.exe --list --verbose`의 `Ubuntu-24.04`, `VERSION 2`
 - VS Code의 `WSL: Ubuntu-24.04` 또는 `SSH: codyssey-training@orb`
 - bash, `pwd`, Git root, branch
 - Docker version, info, images, ps, logs, stats
@@ -535,7 +604,9 @@ code --version
 
 ## Windows·WSL
 
-- 저장소는 `/home/...`에 둡니다.
+- Ubuntu 배포판 저장 위치는 `C:\WSL\Ubuntu-24.04`입니다.
+- 프로젝트 저장소는 WSL 내부 `/home/...`에 둡니다.
+- `C:\WSL\Ubuntu-24.04`를 일반 프로젝트 폴더처럼 직접 수정하지 않습니다.
 - PowerShell 명령과 bash 명령을 구분합니다.
 - Docker Desktop WSL Integration 대상이 `Ubuntu-24.04`인지 확인합니다.
 - Docker Desktop과 WSL 내부 독립 Docker Engine을 동시에 운영하지 않습니다.
@@ -553,7 +624,10 @@ code --version
 
 | 증상 | 환경 | 조치 |
 |---|---|---|
-| `wsl --install`이 도움말만 표시 | Windows | `wsl --list --online` 후 `wsl --install -d Ubuntu-24.04` |
+| `--location`이 도움말에 없음 | Windows | `wsl.exe --update`와 Windows Update 후 다시 확인 |
+| `C:\WSL\Ubuntu-24.04`가 이미 비어 있지 않음 | Windows | 기존 폴더를 확인하고 다른 빈 위치 사용 |
+| 같은 이름의 Ubuntu가 이미 설치됨 | Windows | 덮어쓰기 금지, 기존 배포판 이동은 별도 export/import 절차 사용 |
+| `wsl --install`이 도움말만 표시 | Windows | `wsl --list --online` 후 전체 `--distribution`, `--location` 명령 사용 |
 | 배포판이 WSL 1 | Windows | `wsl --set-version Ubuntu-24.04 2` |
 | VS Code가 Windows 로컬 창으로 열림 | WSL | WSL Ubuntu 저장소에서 `code .` |
 | `code: command not found` | WSL | Windows VS Code와 WSL 확장 설치 확인 |
@@ -570,11 +644,15 @@ code --version
 ## Windows 11 Pro + WSL2
 
 - [ ] Windows 11 Pro 정보 기록
-- [ ] WSL 버전 확인
-- [ ] `Ubuntu-24.04`, VERSION 2
-- [ ] WSL Linux 홈에 저장소 clone
+- [ ] `C:\WSL` 폴더 생성
+- [ ] `--location` 옵션 지원 확인
+- [ ] Ubuntu 24.04를 `C:\WSL\Ubuntu-24.04`에 설치
+- [ ] `Test-Path "C:\WSL\Ubuntu-24.04"` 결과 `True`
+- [ ] `wsl.exe --list --verbose`에서 `Ubuntu-24.04`, VERSION 2
+- [ ] Ubuntu Linux 사용자 생성
+- [ ] 저장소를 `/home/...`에 clone
 - [ ] VS Code WSL 확장 설치
-- [ ] WSL Ubuntu에서 `code .`
+- [ ] Ubuntu에서 `code .`
 - [ ] VS Code 왼쪽 아래 WSL 표시
 - [ ] Docker Desktop WSL Integration 활성화
 - [ ] WSL에서 Docker Client·Server 확인
@@ -607,9 +685,9 @@ code --version
 # 13. 공식 참고자료
 
 - Microsoft WSL 설치: <https://learn.microsoft.com/windows/wsl/install>
+- Microsoft WSL 기본 명령: <https://learn.microsoft.com/windows/wsl/basic-commands>
 - VS Code WSL: <https://code.visualstudio.com/docs/remote/wsl>
 - Docker Desktop WSL 2 backend: <https://docs.docker.com/desktop/features/wsl/>
-- Docker Desktop + WSL 개발: <https://docs.docker.com/desktop/features/wsl/use-wsl/>
 
 ---
 
@@ -617,7 +695,7 @@ code --version
 
 ### Windows
 
-> Windows 11 Pro에서 WSL2와 Ubuntu 24.04를 구성하고, WSL Linux 홈의 저장소에서 `code .`을 실행해 VS Code Remote-WSL 작업공간을 열었다. Docker Desktop WSL Integration을 활성화한 뒤 Ubuntu bash, workspace 경로, Docker Client·Server, 포트 매핑, 바인드 마운트, 볼륨 영속성 및 Git/GitHub 검증을 완료했다.
+> Windows 11 Pro의 `C:\WSL\Ubuntu-24.04` 경로에 WSL2 Ubuntu 24.04를 설치하고, Ubuntu Linux 홈의 저장소에서 `code .`을 실행해 VS Code Remote-WSL 작업공간을 열었다. Docker Desktop WSL Integration을 활성화한 뒤 Ubuntu bash, workspace 경로, Docker Client·Server, 포트 매핑, 바인드 마운트, 볼륨 영속성 및 Git/GitHub 검증을 완료했다.
 
 ### macOS
 
