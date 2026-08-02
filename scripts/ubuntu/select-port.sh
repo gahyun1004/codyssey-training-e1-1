@@ -7,8 +7,27 @@ else
   CANDIDATES=(8080 8081 18080 18081)
 fi
 
+valid_port() {
+  local port="$1"
+  [[ "$port" =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 ))
+}
+
 port_is_busy() {
   local port="$1"
+
+  if command -v ss >/dev/null 2>&1; then
+    if ss -H -ltn 2>/dev/null \
+      | awk '{print $4}' \
+      | grep -Eq "(^|[:.])${port}$"; then
+      return 0
+    fi
+  fi
+
+  if command -v lsof >/dev/null 2>&1; then
+    if lsof -nP -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | grep -q LISTEN; then
+      return 0
+    fi
+  fi
 
   if command -v mac >/dev/null 2>&1; then
     if mac lsof -nP -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | grep -q LISTEN; then
@@ -27,7 +46,7 @@ port_is_busy() {
 }
 
 for candidate in "${CANDIDATES[@]}"; do
-  if [[ "$candidate" =~ ^[0-9]+$ ]] && ! port_is_busy "$candidate"; then
+  if valid_port "$candidate" && ! port_is_busy "$candidate"; then
     printf '%s\n' "$candidate"
     exit 0
   fi
