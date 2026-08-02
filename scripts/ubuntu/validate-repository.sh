@@ -14,9 +14,16 @@ required_files=(
   .vscode/settings.json
   .vscode/extensions.json
   .vscode/tasks.json
+  scripts/ci/check-dockerfile.sh
+  scripts/ci/check-markdown-links.py
+  scripts/ci/check-powershell-syntax.ps1
+  scripts/ubuntu/lib/redact.sh
   scripts/ubuntu/verify-remote-workspace.sh
   scripts/ubuntu/verify-wsl-workspace.sh
   scripts/ubuntu/select-port.sh
+  scripts/ubuntu/collect-environment.sh
+  scripts/ubuntu/collect-terminal-permissions.sh
+  scripts/ubuntu/collect-docker-evidence.sh
   scripts/ubuntu/collect-evidence.sh
   scripts/ubuntu/validate-repository.sh
   scripts/windows/setup-wsl.ps1
@@ -49,19 +56,10 @@ done
 while IFS= read -r -d '' script; do
   bash -n "$script"
 done < <(find scripts -type f -name '*.sh' -print0)
+echo '[PASS] Shell syntax validated.'
 
-# Directly executed entry points must retain the executable bit.
-for script in \
-  scripts/open-vscode-remote.sh \
-  scripts/macos/open-vscode-remote.sh \
-  scripts/ubuntu/verify-remote-workspace.sh \
-  scripts/ubuntu/verify-wsl-workspace.sh \
-  scripts/ubuntu/select-port.sh; do
-  if [[ ! -x "$script" ]]; then
-    printf '[FAIL] executable bit missing: %s\n' "$script" >&2
-    exit 1
-  fi
-done
+# 저장소의 셸 스크립트는 문서·Task·CI에서 모두 `bash <path>`로 실행합니다.
+# 따라서 Git 실행 비트에 의존하지 않고, 문법과 호출 경로를 검증합니다.
 
 if command -v python3 >/dev/null 2>&1; then
   python3 - <<'PY'
@@ -73,18 +71,25 @@ for path in Path('.vscode').glob('*.json'):
         json.load(handle)
     print(f'[PASS] JSON: {path}')
 PY
-elif command -v jq >/dev/null 2>&1; then
-  for json_file in .vscode/*.json; do
-    jq empty "$json_file"
-    printf '[PASS] JSON: %s\n' "$json_file"
-  done
 else
-  echo '[FAIL] python3 or jq is required for JSON validation.' >&2
+  echo '[FAIL] python3 is required for repository validation.' >&2
   exit 1
 fi
 
-grep -q '^FROM nginx:1\.30\.4-alpine3\.24$' Dockerfile
-grep -q 'COPY site/' Dockerfile
+python3 scripts/ci/check-markdown-links.py
+bash scripts/ci/check-dockerfile.sh
+
+if command -v pwsh >/dev/null 2>&1; then
+  pwsh -NoProfile -File scripts/ci/check-powershell-syntax.ps1
+else
+  echo '[INFO] pwsh not found; PowerShell syntax check is delegated to GitHub Actions.'
+fi
+
 grep -q 'Codyssey E1-1' site/index.html
 
-echo '[PASS] repository structure, shell syntax and JSON syntax validated.'
+if git grep -n -E 'https?://[^/@[:space:]]+@' -- .; then
+  echo '[FAIL] credential-like URL found in tracked files.' >&2
+  exit 1
+fi
+
+echo '[PASS] repository structure, syntax, links, Dockerfile and basic secret patterns validated.'

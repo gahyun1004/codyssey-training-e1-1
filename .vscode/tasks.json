@@ -38,7 +38,56 @@
       }
     },
     {
-      "label": "E1-1: Collect Basic Evidence Logs",
+      "label": "E1-1: Verify WSL Before Docker",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/verify-wsl-workspace.sh",
+        "--skip-docker"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "E1-1: Collect Environment Evidence",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/collect-environment.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "E1-1: Collect Terminal and Permission Evidence",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/collect-terminal-permissions.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "E1-1: Collect Docker Evidence",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/collect-docker-evidence.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "E1-1: Collect All Basic Evidence",
       "type": "shell",
       "command": "bash",
       "args": [
@@ -47,13 +96,20 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "clear": true,
-        "focus": true
-      }
+      "problemMatcher": []
+    },
+    {
+      "label": "E1-1: Collect Evidence Without Docker",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/collect-evidence.sh",
+        "--skip-docker"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
     },
     {
       "label": "E1-1: Validate Repository",
