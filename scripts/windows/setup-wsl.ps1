@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$Distribution = "Ubuntu-24.04",
-    [string]$InstallRoot = "C:\WSL"
+    [string]$InstallRoot = "C:\WSL",
+    [string]$InstallDirectoryName = "codyssey-ubuntu24"
 )
 
 Set-StrictMode -Version Latest
@@ -34,7 +35,7 @@ if (-not (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-$installLocation = Join-Path -Path $InstallRoot -ChildPath $Distribution
+$installLocation = Join-Path -Path $InstallRoot -ChildPath $InstallDirectoryName
 
 Write-Host "[INFO] Windows 정보"
 Get-ComputerInfo |
@@ -42,9 +43,10 @@ Get-ComputerInfo |
     Format-List
 
 Write-Host "[INFO] 요청한 WSL 배포판 설치 위치"
-Write-Host "       Distribution : $Distribution"
-Write-Host "       Install root : $InstallRoot"
-Write-Host "       Final path   : $installLocation"
+Write-Host "       Distribution          : $Distribution"
+Write-Host "       Install root          : $InstallRoot"
+Write-Host "       Install directory name: $InstallDirectoryName"
+Write-Host "       Final path            : $installLocation"
 
 Write-Host "[INFO] WSL 설치 상태 확인"
 wsl.exe --version *> $null
