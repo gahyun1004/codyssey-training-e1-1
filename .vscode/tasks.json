@@ -4,7 +4,10 @@
     {
       "label": "E1-1: Verify Ubuntu Remote Workspace",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/ubuntu/verify-remote-workspace.sh",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/verify-remote-workspace.sh"
+      ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -19,7 +22,46 @@
     {
       "label": "E1-1: Verify WSL Ubuntu Workspace",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/ubuntu/verify-wsl-workspace.sh",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/verify-wsl-workspace.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "E1-1: Collect Basic Evidence Logs",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/collect-evidence.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "E1-1: Validate Repository",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/scripts/ubuntu/validate-repository.sh"
+      ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
