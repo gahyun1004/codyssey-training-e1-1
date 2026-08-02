@@ -95,8 +95,9 @@ else
 fi
 
 grep -q 'Codyssey E1-1' site/index.html
-grep -q '^# Codex repository instructions$' AGENTS.md
-grep -q 'Never invent command output' AGENTS.md
+grep -q '^# Codex 저장소 작업 지침$' AGENTS.md
+grep -q '실행하지 않은 명령 출력' AGENTS.md
+grep -q '^## 작성 언어 원칙$' AGENTS.md
 grep -q '^# Codex 작업 운영 가이드$' docs/codex/README.md
 grep -q '^# Codex 공통 수용 기준$' docs/codex/ACCEPTANCE_CRITERIA.md
 
