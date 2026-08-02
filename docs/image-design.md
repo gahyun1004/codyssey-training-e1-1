@@ -1,33 +1,82 @@
 # 커스텀 이미지 설계
 
-## 선택한 베이스 이미지
+> 아래 내용은 현재 `Dockerfile`의 설계 설명입니다. 빌드 성공 여부, 이미지 ID와 실행 결과는 실제 수행 후 기록합니다.
 
-- 이미지:
+## 1. 선택한 베이스 이미지
+
+- 이미지: `nginx:1.30.4-alpine3.24`
+- 공식 이미지: Docker Official Image `nginx`
 - 선택 이유:
+  1. 정적 웹 콘텐츠를 서비스하는 목적에 맞는 NGINX가 포함되어 있음
+  2. Alpine 기반으로 이미지 크기가 비교적 작음
+  3. `nginx:alpine` 같은 이동 태그 대신 NGINX와 Alpine 버전을 명시해 재빌드 일관성을 높임
 
-## 적용한 커스텀 포인트
+공식 태그 확인:
 
-1. `LABEL` 목적:
-2. `COPY` 목적:
-3. `EXPOSE` 목적:
-4. 추가 설정:
+- <https://hub.docker.com/_/nginx/tags>
 
-## Dockerfile
+## 2. 적용한 커스텀 포인트
+
+1. `LABEL org.opencontainers.image.title`: 이미지 이름과 목적 식별
+2. `LABEL org.opencontainers.image.description`: 이미지 설명 기록
+3. `LABEL org.opencontainers.image.source`: 원본 GitHub 저장소 연결
+4. `COPY site/ /usr/share/nginx/html/`: 직접 작성한 정적 웹 콘텐츠 포함
+5. `EXPOSE 80`: 컨테이너가 사용하는 HTTP 포트 문서화
+
+`EXPOSE 80`만으로 호스트 포트가 열리는 것은 아닙니다. 실행할 때 `-p "127.0.0.1:${HOST_PORT}:80"` 포트 매핑을 별도로 지정합니다.
+
+## 3. Dockerfile
 
 ```dockerfile
-# 실제 Dockerfile 내용을 붙여 넣거나 링크합니다.
+FROM nginx:1.30.4-alpine3.24
+
+LABEL org.opencontainers.image.title="codyssey-e1-1-web"
+LABEL org.opencontainers.image.description="Codyssey E1-1 custom NGINX web server"
+LABEL org.opencontainers.image.source="https://github.com/gahyun1004/codyssey-training-e1-1"
+
+COPY site/ /usr/share/nginx/html/
+
+EXPOSE 80
 ```
 
-## 빌드와 실행
+원본: [`../Dockerfile`](../Dockerfile)
+
+## 4. 빌드
 
 ```bash
-docker build -t <image_name> .
-docker run -d --name <container_name> <image_name>
+{
+  echo '$ docker build -t codyssey-e1-1-web:1.0 .'
+  docker build -t codyssey-e1-1-web:1.0 .
+  echo '$ docker image inspect codyssey-e1-1-web:1.0'
+  docker image inspect codyssey-e1-1-web:1.0 \
+    --format 'ID={{.Id}} CREATED={{.Created}} SIZE={{.Size}}'
+} 2>&1 | tee docs/logs/docker-build.txt
 ```
 
-## 결과
+## 5. 실행과 HTTP 확인
 
-- 이미지 빌드:
-- 컨테이너 실행:
-- 핵심 출력:
+```bash
+HOST_PORT="$(scripts/ubuntu/select-port.sh)"
+
+docker rm -f e1-1-web 2>/dev/null || true
+docker run -d \
+  --name e1-1-web \
+  -p "127.0.0.1:${HOST_PORT}:80" \
+  codyssey-e1-1-web:1.0
+
+curl -fsS "http://localhost:${HOST_PORT}"
+```
+
+## 6. 실제 결과 기록
+
+- 수행 날짜:
+- 수행 환경:
+- Git commit SHA:
+- 이미지 빌드: 성공 / 실패
+- 이미지 ID:
+- 이미지 크기:
+- 컨테이너 실행: 성공 / 실패
+- 선택한 호스트 포트:
+- HTTP 응답 핵심 문구:
 - 빌드 로그: `docs/logs/docker-build.txt`
+- 화면 증거: `docs/screenshots/docker/`, `docs/screenshots/port-mapping/`
