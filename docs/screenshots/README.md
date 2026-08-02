@@ -22,7 +22,7 @@ docs/screenshots/
 environment/01-orbstack-ubuntu.png
 windows-wsl/01-windows-11-pro-version.png
 windows-wsl/02-wsl-location-option.png
-windows-wsl/03-c-wsl-install-folder.png
+windows-wsl/03-c-wsl-codyssey-ubuntu24-folder.png
 windows-wsl/04-wsl-list-verbose.png
 windows-wsl/05-docker-desktop-wsl-integration.png
 terminal/01-basic-commands.png
@@ -45,7 +45,7 @@ vscode/02-remote-wsl-path-branch.png
 - Windows 11 Pro 버전과 빌드
 - `wsl.exe --version`
 - `wsl.exe --help`에서 `--location` 옵션 확인
-- `C:\WSL\Ubuntu-24.04` 폴더와 `Test-Path` 결과
+- `C:\WSL\codyssey-ubuntu24` 폴더와 `Test-Path` 결과
 - `wsl.exe --list --verbose`의 `Ubuntu-24.04`, `VERSION 2`
 - Docker Desktop의 `Ubuntu-24.04` WSL Integration
 - VS Code 왼쪽 아래 `WSL: Ubuntu-24.04`
@@ -53,10 +53,11 @@ vscode/02-remote-wsl-path-branch.png
 
 ## 경로 캡처 시 주의
 
-- 배포판 설치 위치는 `C:\WSL\Ubuntu-24.04`입니다.
+- 배포판 설치 위치는 `C:\WSL\codyssey-ubuntu24`입니다.
+- WSL 배포판 이름은 `Ubuntu-24.04`입니다.
 - 프로젝트 workspace는 WSL Linux 홈의 `/home/<사용자>/...`입니다.
 - Windows 사용자 이름과 개인 경로는 필요하면 마스킹합니다.
-- `C:\WSL\Ubuntu-24.04` 내부 파일을 임의로 수정하지 않습니다.
+- `C:\WSL\codyssey-ubuntu24` 내부 파일을 임의로 수정하지 않습니다.
 
 ## 공통 캡처 기준
 
