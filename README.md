@@ -14,6 +14,8 @@
 
 ## 수행 문서
 
+- [저장소 구조](docs/repository-structure.md)
+- [증거 인덱스](docs/evidence-index.md)
 - [실행 환경](docs/environment.md)
 - [터미널 및 권한 실습](docs/terminal-and-permissions.md)
 - [Docker 운영](docs/docker-operations.md)
@@ -22,6 +24,7 @@
 - [볼륨 영속성](docs/volume-persistence.md)
 - [최종 검증 결과](docs/test-results.md)
 - [트러블슈팅](docs/troubleshooting.md)
+- [로그 작성 규칙](docs/logs/README.md)
 - [스크린샷 규칙](docs/screenshots/README.md)
 
 ---
@@ -493,6 +496,8 @@ code --new-window \
 bash scripts/open-vscode-remote.sh
 ```
 
+위 호환용 진입점은 실제 Mac 스크립트인 `scripts/macos/open-vscode-remote.sh`를 실행합니다.
+
 다른 OrbStack 머신 이름을 사용한다면:
 
 ```bash
@@ -506,6 +511,8 @@ bash scripts/open-vscode-remote.sh \
   codyssey-training \
   codyssey-training/codyssey-training-e1-1
 ```
+
+> 이 스크립트 명령은 Mac에도 저장소가 clone되어 있거나 Mac에서 해당 스크립트 경로에 접근할 수 있을 때 실행합니다. Mac에 저장소가 없으면 7.5절의 `code --remote` 명령을 사용합니다.
 
 ## 7.7 원격 연결 성공 기준
 
@@ -610,13 +617,17 @@ Shift + Command + P
 → E1-1: Verify Ubuntu Remote Workspace
 ```
 
+위 Task는 `${workspaceFolder}/scripts/ubuntu/verify-remote-workspace.sh`를 실행합니다.
+
 > `.vscode/settings.json`은 원격 연결 이후의 터미널을 설정합니다. SSH 연결 자체는 Mac의 Remote-SSH 확장과 `code --remote` 명령이 담당합니다.
 
 ---
 
 # 9. 저장소 기본 구조와 환경 기록
 
-권장 구조:
+## 9.1 실제 저장소 구조
+
+현재 저장소의 실제 구조는 다음과 같습니다.
 
 ```text
 codyssey-training-e1-1/
@@ -625,17 +636,33 @@ codyssey-training-e1-1/
 ├── .dockerignore
 ├── .gitignore
 ├── .vscode/
+│   ├── README.md
 │   ├── settings.json
 │   ├── extensions.json
 │   └── tasks.json
 ├── scripts/
-│   └── open-vscode-remote.sh
+│   ├── README.md
+│   ├── open-vscode-remote.sh
+│   ├── macos/
+│   │   └── open-vscode-remote.sh
+│   └── ubuntu/
+│       ├── verify-remote-workspace.sh
+│       └── select-port.sh
 ├── site/
 │   └── index.html
 ├── bind-test/
 │   └── index.html
 ├── practice/
+│   ├── README.md
+│   ├── terminal/
+│   │   └── .gitkeep
+│   └── permissions/
+│       ├── .gitkeep
+│       └── permission-dir/
+│           └── .gitkeep
 └── docs/
+    ├── evidence-index.md
+    ├── repository-structure.md
     ├── environment.md
     ├── terminal-and-permissions.md
     ├── docker-operations.md
@@ -645,10 +672,79 @@ codyssey-training-e1-1/
     ├── test-results.md
     ├── troubleshooting.md
     ├── logs/
+    │   └── README.md
     └── screenshots/
+        ├── README.md
+        ├── environment/
+        │   └── .gitkeep
+        ├── terminal/
+        │   └── .gitkeep
+        ├── permissions/
+        │   └── .gitkeep
+        ├── docker/
+        │   └── .gitkeep
+        ├── port-mapping/
+        │   └── .gitkeep
+        ├── bind-mount/
+        │   └── .gitkeep
+        ├── volume/
+        │   └── .gitkeep
+        ├── github/
+        │   └── .gitkeep
+        └── vscode/
+            └── .gitkeep
 ```
 
-환경 로그 저장:
+전체 구조와 역할은 [docs/repository-structure.md](docs/repository-structure.md)에서 별도로 확인할 수 있습니다.
+
+## 9.2 폴더와 파일 역할
+
+| 경로 | 역할 | 실행 위치 |
+|---|---|---|
+| `Dockerfile` | `site/` 콘텐츠를 포함하는 NGINX 이미지 정의 | Ubuntu |
+| `.dockerignore` | Docker build context에서 불필요한 파일 제외 | Ubuntu |
+| `.gitignore` | 환경 파일, 개인키, 캐시 등 민감·임시 파일 제외 | 공통 |
+| `.vscode/settings.json` | Ubuntu bash와 workspace 시작 경로 설정 | VS Code Ubuntu |
+| `.vscode/tasks.json` | 원격 workspace 검증 스크립트 실행 | VS Code Ubuntu |
+| `scripts/open-vscode-remote.sh` | 기존 명령과 호환되는 Mac용 진입점 | macOS |
+| `scripts/macos/` | OrbStack Remote-SSH 실행 스크립트 | macOS |
+| `scripts/ubuntu/` | 원격 환경 검증과 포트 선택 스크립트 | Ubuntu |
+| `site/` | Docker 이미지에 포함되는 정적 웹 콘텐츠 | Ubuntu |
+| `bind-test/` | 바인드 마운트 변경 전후 확인용 콘텐츠 | Ubuntu |
+| `practice/terminal/` | 터미널 파일 조작 실습 | Ubuntu |
+| `practice/permissions/` | 파일·디렉터리 권한 실습 | Ubuntu |
+| `docs/evidence-index.md` | 수행 항목별 문서·로그·스크린샷 상태 관리 | 공통 |
+| `docs/logs/` | 실제 명령과 출력 결과 저장 | Ubuntu |
+| `docs/screenshots/` | 환경·Docker·GitHub·VS Code 화면 증거 저장 | 공통 |
+
+## 9.3 빈 폴더와 `.gitkeep`
+
+Git은 빈 디렉터리를 추적하지 않으므로 실습·스크린샷 하위 폴더에는 `.gitkeep`을 두었습니다.
+
+- `.gitkeep`은 폴더 구조 유지용 파일입니다.
+- `.gitkeep` 자체는 미션 수행 증거가 아닙니다.
+- 실제 실습이 끝나면 해당 폴더에 로그나 스크린샷을 추가합니다.
+- 실제 결과를 추가한 뒤 `.gitkeep`은 유지하거나 삭제할 수 있습니다.
+
+## 9.4 로그와 스크린샷 상태 확인
+
+```bash
+# [VS Code Ubuntu]
+find docs/logs -maxdepth 1 -type f -print | sort
+find docs/screenshots -maxdepth 2 -type f -print | sort
+```
+
+현재 `README.md`나 `.gitkeep`만 표시된다면 구조만 준비된 상태입니다. 실제 명령 출력과 화면 캡처를 추가해야 완료 증거가 됩니다.
+
+증거 상태는 다음 문서에서 관리합니다.
+
+```text
+docs/evidence-index.md
+```
+
+각 실습이 끝날 때 `미완료`를 `완료`로 변경하고 실제 문서·로그·스크린샷 링크를 확인합니다.
+
+## 9.5 환경 로그 저장
 
 ```bash
 # [VS Code Ubuntu]
@@ -677,6 +773,26 @@ mkdir -p docs/logs
 ```
 
 공개하면 안 되는 이메일, 토큰, 내부 경로가 있는지 확인한 뒤 커밋합니다.
+
+## 9.6 저장소 구조 검증
+
+```bash
+# [VS Code Ubuntu]
+test -f README.md
+test -f Dockerfile
+test -f .dockerignore
+test -f .gitignore
+test -f .vscode/settings.json
+test -f .vscode/tasks.json
+test -x scripts/ubuntu/verify-remote-workspace.sh
+test -x scripts/ubuntu/select-port.sh
+test -f site/index.html
+test -f bind-test/index.html
+test -f docs/evidence-index.md
+test -f docs/logs/README.md
+
+echo '[PASS] 필수 저장소 구조 확인 완료'
+```
 
 ---
 
@@ -859,6 +975,12 @@ docker images | grep codyssey-e1-1-web
 사용 가능한 포트를 선택합니다.
 
 ```bash
+source <(scripts/ubuntu/select-port.sh)
+```
+
+직접 선택하려면 다음 명령을 사용합니다.
+
+```bash
 unset HOST_PORT
 for candidate in 8080 8081 18080 18081
 do
@@ -1028,18 +1150,21 @@ git grep -n -i -E 'token|password|secret|private.?key' || true
 ```bash
 git add \
   README.md \
-  .vscode/settings.json \
-  .vscode/extensions.json \
-  .vscode/tasks.json \
-  scripts/open-vscode-remote.sh \
-  docs/environment.md \
-  docs/logs/environment.txt
+  Dockerfile \
+  .dockerignore \
+  .gitignore \
+  .vscode/ \
+  scripts/ \
+  site/ \
+  bind-test/ \
+  practice/ \
+  docs/
 
 git diff --cached
-git commit -m "Feat: configure OrbStack Remote-SSH workspace"
+git commit -m "Feat: complete E1-1 workstation structure"
 ```
 
-터미널·권한·Docker 산출물은 기능 단위로 나누어 커밋합니다.
+실제 로그와 스크린샷이 생성된 뒤에는 해당 증거만 별도 커밋하는 것을 권장합니다.
 
 첫 push:
 
@@ -1077,7 +1202,7 @@ cd "$RETEST_DIR"
 docker build -t codyssey-e1-1-web:retest .
 ```
 
-새 clone에서도 `.vscode` 파일, Dockerfile, 웹 소스, 문서 링크가 존재해야 합니다.
+새 clone에서도 `.vscode` 파일, Dockerfile, 웹 소스, 스크립트, 문서 링크가 존재해야 합니다.
 
 ## 18.2 Pull Request와 병합
 
@@ -1151,8 +1276,9 @@ git branch --show-current
 | 터미널이 home에서 시작 | `pwd` | 저장소 폴더를 열고 새 터미널 생성 |
 | 셸이 bash가 아님 | `ps -p $$ -o comm=` | Workspace Trust 후 `.vscode/settings.json` 확인 |
 | `.vscode` 설정 미적용 | Trust 상태 | 저장소를 신뢰하고 기존 터미널을 닫은 뒤 재생성 |
+| 검증 Task 실패 | 스크립트 실행 권한 | `chmod +x scripts/ubuntu/*.sh` 후 재실행 |
 | Docker Server 없음 | `docker version`, `docker info` | OrbStack Docker 연결 확인 |
-| 포트 충돌 | `mac lsof`, `docker ps` | 다른 포트 선택 |
+| 포트 충돌 | `mac lsof`, `docker ps` | `scripts/ubuntu/select-port.sh`로 다른 포트 선택 |
 | 바인드 변경 미반영 | `pwd`, `docker inspect` | 저장소 루트와 마운트 경로 확인 |
 | 볼륨 데이터 없음 | `docker volume ls` | 동일한 볼륨 이름 사용 확인 |
 | push 거절 | `git fetch`, `git status` | 강제 push 금지, 원격 변경 확인 |
@@ -1172,6 +1298,17 @@ git branch --show-current
 - [ ] 새 터미널이 Ubuntu bash로 열린다.
 - [ ] 새 터미널의 `pwd`가 `${workspaceFolder}`이다.
 - [ ] 검증 Task를 실행했다.
+
+## 저장소 구조
+
+- [ ] `Dockerfile`, `.dockerignore`, `.gitignore` 존재
+- [ ] `site/index.html`, `bind-test/index.html` 존재
+- [ ] macOS·Ubuntu 스크립트가 분리되어 있음
+- [ ] VS Code Task가 Ubuntu 검증 스크립트를 실행함
+- [ ] `practice/` 실습 폴더 존재
+- [ ] `docs/logs/`와 `docs/screenshots/` 구조 존재
+- [ ] `docs/evidence-index.md`에서 증거 상태 관리
+- [ ] `.gitkeep`과 실제 증거 파일을 구분함
 
 ## 터미널·권한
 
@@ -1208,4 +1345,4 @@ git branch --show-current
 
 ## 완료 문장 예시
 
-> macOS의 OrbStack Ubuntu 24.04에 SSH로 접속하고, Mac의 VS Code CLI에서 `code --remote`를 사용해 Ubuntu 저장소를 열었다. 프로젝트의 `.vscode` 설정을 통해 새 통합 터미널이 Ubuntu bash와 현재 workspace 폴더에서 시작되도록 구성했다. 터미널·권한·Docker·Git/GitHub 실습, 포트 매핑, 바인드 마운트, 볼륨 영속성, clean clone 및 `main` 최종 검증을 완료했다.
+> macOS의 OrbStack Ubuntu 24.04에 SSH로 접속하고, Mac의 VS Code CLI에서 `code --remote`를 사용해 Ubuntu 저장소를 열었다. 프로젝트의 `.vscode` 설정을 통해 새 통합 터미널이 Ubuntu bash와 현재 workspace 폴더에서 시작되도록 구성했다. 운영체제별 스크립트, Dockerfile, 웹 콘텐츠, 실습 폴더, 로그·스크린샷 구조를 정리하고 터미널·권한·Docker·Git/GitHub 실습, 포트 매핑, 바인드 마운트, 볼륨 영속성, clean clone 및 `main` 최종 검증을 완료했다.
